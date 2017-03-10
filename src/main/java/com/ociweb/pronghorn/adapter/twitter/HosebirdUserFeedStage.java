@@ -32,10 +32,10 @@ import twitter4j.conf.ConfigurationBuilder;
  * @author Nathan Tippy
  *
  */
-public class HosebirdFeedStage extends PronghornStage{
+public class HosebirdUserFeedStage extends PronghornStage{
 
     private final Authentication auth;
-
+    private final StreamingEndpoint endpoint;
     
     private final PublicObjectFactory factory = new PublicObjectFactory(new ConfigurationBuilder().build());
     private final BlockingQueue<String> queue = new LinkedBlockingQueue<String>(10000);
@@ -43,27 +43,34 @@ public class HosebirdFeedStage extends PronghornStage{
     private Pipe<TwitterEventSchema> output;
     private final String host;
     private final boolean isMyFollowers;
-    private String terms;
-    private final int delay;
 
-    public HosebirdFeedStage(GraphManager graphManager, Authentication auth, String terms, int delay, Pipe<TwitterEventSchema> output) {
-        this(graphManager, auth, terms, output, Constants.STREAM_HOST, delay);
+    
+    public HosebirdUserFeedStage(GraphManager graphManager, Authentication auth, Pipe<TwitterEventSchema> output, int delay) {
+        //feed of what everyone this user follows is up to.
+        this(graphManager, auth, output, Constants.USERSTREAM_HOST, delay);
     }
     
-    public HosebirdFeedStage(GraphManager graphManager, Authentication auth, String terms, Pipe<TwitterEventSchema> output, String host, int delay) {
+    public HosebirdUserFeedStage(GraphManager graphManager, Authentication auth, Pipe<TwitterEventSchema> output, String host, int delay) {
         super(graphManager, NONE, output);
                 
         this.auth = auth;   //new OAuth1(consumerKey, consumerSecret, token, secret);               
 
-        isMyFollowers = false;
+        isMyFollowers = true;
+        UserstreamEndpoint localEndpoint = new UserstreamEndpoint();
         
-        this.terms = terms;
-   
+        localEndpoint.withFollowings(true);
+        localEndpoint.withUser(false);
+        localEndpoint.allReplies(true);
+      //  localEndpoint.filterLevel(FilterLevel.Medium);
+        
+        this.endpoint = localEndpoint;
+
         this.output = output;
         
         this.host = host;
         this.delay = delay;
     }
+    private final int delay;
     
     @Override
     public void startup() {
@@ -72,19 +79,6 @@ public class HosebirdFeedStage extends PronghornStage{
             Thread.sleep(delay);
         } catch (InterruptedException e) {
         }
-        
-        buildClient(terms);
-        
-    }
-
-	private void buildClient(String terms) {
-		if (null!=client) {
-			client.stop();
-		}
-		
-		StatusesFilterEndpoint endpoint = new StatusesFilterEndpoint();
-        endpoint.addPostParameter(Constants.TRACK_PARAM, terms); //single comma separated string
-        //localEndpoint.filterLevel(FilterLevel.Medium);   
         
         // Create a new BasicClient. By default gzip is enabled.
         client = new ClientBuilder()
@@ -98,7 +92,8 @@ public class HosebirdFeedStage extends PronghornStage{
           .build();
        
         client.connect();
-	}
+        
+    }
     
     @Override
     public void shutdown() {
