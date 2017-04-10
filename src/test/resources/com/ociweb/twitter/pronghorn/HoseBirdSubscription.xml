@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xmlns="http://www.fixprotocol.org/ns/fast/td/1.1">
+   
+        
+    <template name="ClearUsers" id="7">  
+    </template>
+     
+    <template name="ClearWords" id="8">  
+    </template>
+    
+    <template name="Reconnect" id="9">  
+    </template>
+  
+    <template name="DumpCredentials" id="10">
+    </template>
+    
+    <template name="AddWord" id="20">
+    	<String name="Word"     id = "21" charset="unicode"/>
+    </template>
+
+    <template name="RemoveWord" id="25">
+    	<String name="Word"     id = "21" charset="unicode"/>
+    </template>    
+
+    <template name="AddUser" id="30">
+    	<uInt64 name="User"     id = "31"/>
+    </template>
+
+    <template name="RemoveUser" id="35">
+    	<uInt64 name="User"     id = "31"/>
+    </template>   
+    
+
+<!-- https://api.twitter.com/1.1/statuses/user_timeline.json?screen_name=twitterapi&count=2  -->
+
+   
+</templates>
+

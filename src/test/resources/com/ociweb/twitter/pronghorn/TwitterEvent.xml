@@ -10,7 +10,7 @@
             <uInt32 name="FavouritesCount" id = "54"/> 
    			<uInt32 name="FollowersCount"  id = "55"/> 
    			<uInt32 name="FriendsCount"    id = "56"/>   			
-            <uInt64 name="CreatedAt"       id = "57"/>
+            <String name="CreatedAt"       id = "57" presence="optional" charset="unicode"/> 
             
             <String name="Description"     id = "58" presence="optional" charset="unicode"/>
             <uInt32 name="ListedCount"     id = "59"/> 
@@ -29,7 +29,7 @@
 	          <uInt32 name="FavouritesCount" id = "54"/> 
 	   	      <uInt32 name="FollowersCount"  id = "55"/> 
 	   		  <uInt32 name="FriendsCount"    id = "56"/> 
-	          <uInt64 name="CreatedAt"       id = "57"/>
+	          <String name="CreatedAt"       id = "57" presence="optional" charset="unicode"/> 
 	            
 	          <String name="Description"     id = "58" presence="optional" charset="unicode"/>
 	   		  <uInt32 name="ListedCount"     id = "59"/>  			

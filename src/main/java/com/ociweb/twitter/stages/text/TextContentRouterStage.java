@@ -3,7 +3,6 @@ package com.ociweb.twitter.stages.text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ociweb.pronghorn.adapter.twitter.TwitterEventSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeReader;
 import com.ociweb.pronghorn.stage.PronghornStage;
@@ -11,6 +10,7 @@ import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.util.ByteConsumer;
 import com.ociweb.pronghorn.util.TrieParser;
 import com.ociweb.pronghorn.util.TrieParserReader;
+import com.ociweb.twitter.stages.json.TwitterEventSchema;
 
 public class TextContentRouterStage extends PronghornStage {
 
@@ -43,6 +43,12 @@ public class TextContentRouterStage extends PronghornStage {
 			@Override
 			public void consume(byte[] backing, int pos, int len, int mask) {
 				filter.text(backing, pos, len, mask);
+			}
+
+			@Override
+			public void consume(byte value) {
+				throw new UnsupportedOperationException();
+				
 			}        	
         };
         
@@ -50,7 +56,13 @@ public class TextContentRouterStage extends PronghornStage {
 			@Override
 			public void consume(byte[] backing, int pos, int len, int mask) {
 				filter.url(backing, pos, len, mask);
-			}        	
+			}   
+			
+			@Override
+			public void consume(byte value) {
+				throw new UnsupportedOperationException();
+				
+			}  
         };        
     }
   

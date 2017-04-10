@@ -82,7 +82,7 @@ public class TwitterCleaner {
 		
 		//GraphExamples.simpleTokenize(gm, auth);
 		
-		GraphExamples.wordFilter(gm, auth);
+		//GraphExamples.wordFilter(gm, auth);
 		
 	}
 
