@@ -12,11 +12,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import com.ociweb.gl.api.GreenRuntime;
 import com.ociweb.pronghorn.network.NetResponseDumpStage;
 import com.ociweb.pronghorn.network.NetResponseJSONStage;
 import com.ociweb.pronghorn.network.schema.ClientHTTPRequestSchema;
@@ -93,7 +96,7 @@ public class AuthTesting  {
 	}
 
 
-	public void run() {
+	public void run2() {
 		
 		GraphManager gm = new GraphManager();		
 		GraphManager.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//every 20 ms
@@ -106,6 +109,16 @@ public class AuthTesting  {
 		
 		
 		MonitorConsoleStage.attach(gm);
+		
+		
+		//add green lightning??
+		
+		
+		
+		
+		
+		
+		
 		
 		ThreadPerStageScheduler scheduler = new ThreadPerStageScheduler(gm);
 		
@@ -127,6 +140,23 @@ public class AuthTesting  {
 		
 	}
 	
+	
+	public void run() {
+		
+		
+		List<Auth> users = new ArrayList<Auth>();
+		
+		long id = 1234;//fake id, must be changed to real twitter id;
+		
+		users.add(new Auth(consumerKey,consumerSecret, token, secret, id));
+		
+		GreenRuntime.run(new ExampleApp(users));
+		
+		//TODO: need clean shutdown for the server.
+		
+	}
+	
+	
 	private void buildStreamingTweetsConsumer(GraphManager gm, Pipe<TwitterEventSchema> hosePipe) {
 		
 		
@@ -134,30 +164,7 @@ public class AuthTesting  {
 		new TwitterEventDumpStage(gm, hosePipe);		
 	//	ConsoleJSONDumpStage.newInstance(gm, hosePipe);
 		
-		
-//		PipeConfig<TwitterEventSchema> hoseFeedPipeConfig = new PipeConfig<TwitterEventSchema>(TwitterEventSchema.instance, 100, 1024);		
-//	//	Pipe<TwitterEventSchema> output = new Pipe<TwitterEventSchema>(hoseFeedPipeConfig);		
-//		Pipe<TwitterEventSchema>[] results = new Pipe[2];		
-//		results[0] = new Pipe<TwitterEventSchema>(hoseFeedPipeConfig);
-//		results[1] = new Pipe<TwitterEventSchema>(hoseFeedPipeConfig);	
-//		
-//		PronghornStage consumeA = new PipeCleanerStage(gm, results[0]);		
-//	//	PronghornStage consumeA = new ConsoleJSONDumpStage(gm, results[0]);		
-//		PronghornStage consumeB = new ConsoleJSONDumpStage(gm, results[1]);		
-//		int field = TwitterEventSchema.MSG_USERPOST_101_FIELD_TEXT_22;
-//		TextContentRouterBloom rules;
-//		try {
-//			rules = new TextContentRouterBloom(
-//					                           new ObjectInputStream( GraphExamples.class.getResourceAsStream("/bookWords.dat")),
-//					                            0,1);
-//			TextContentRouterStage router = new TextContentRouterStage(gm, hosePipe, results, field, rules);
-//			
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//		
+
 	}
 
 

@@ -6,7 +6,7 @@ import com.ociweb.pronghorn.pipe.PipeReader;
 import com.ociweb.pronghorn.pipe.PipeWriter;
 import com.ociweb.pronghorn.stage.PronghornStage;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
-import com.ociweb.twitter.MyAuth;
+import com.ociweb.twitter.OAuth1HeaderBuilder;
 import com.ociweb.twitter.TwitterStreamControlSchema;
 
 public class RequestTwitterUserStreamStage extends PronghornStage {
@@ -18,7 +18,7 @@ public class RequestTwitterUserStreamStage extends PronghornStage {
 	private final String cs;
 	private final String token;
 	private final String secret;
-	private final int id;	
+	private final int selectorId;	
 	
 	public RequestTwitterUserStreamStage(GraphManager graphManager, 
 											String ck, String cs, String token, String secret, int id,
@@ -32,7 +32,7 @@ public class RequestTwitterUserStreamStage extends PronghornStage {
 		this.cs = cs;
 		this.token = token;
 		this.secret = secret;
-		this.id = id;
+		this.selectorId = id;
 		
 	}
 
@@ -40,7 +40,7 @@ public class RequestTwitterUserStreamStage extends PronghornStage {
 	@Override
 	public void startup() {
 		
-		streamingRequest(output, ck, cs, token, secret, id);
+		streamingRequest(output, ck, cs, token, secret, selectorId);
 		
 	}
 	
@@ -73,7 +73,7 @@ public class RequestTwitterUserStreamStage extends PronghornStage {
 	}
 
 	public static void streamingRequest(Pipe<ClientHTTPRequestSchema> pipe, String ck, String cs, String token, String secret, int id) {
-		MyAuth myAuth = new MyAuth(ck, cs, token, secret);
+		OAuth1HeaderBuilder myAuth = new OAuth1HeaderBuilder(ck, cs, token, secret);
 		
 		int port = 443;
 		

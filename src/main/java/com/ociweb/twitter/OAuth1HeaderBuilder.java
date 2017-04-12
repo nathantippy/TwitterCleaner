@@ -11,18 +11,16 @@ import java.util.List;
 import org.apache.http.HttpHeaders;  //TODO: remove with TrieParser
 import org.apache.http.NameValuePair;  //TODO: remove with TrieParser
 import org.apache.http.client.utils.URLEncodedUtils;  //TODO: remove with TrieParser
+
 import com.google.common.base.Charsets;  //TODO: remove with TrieParser
-
-
 import com.ociweb.pronghorn.util.Appendables;
-
 import com.twitter.joauth.OAuthParams;
 import com.twitter.joauth.Request;
 import com.twitter.joauth.Request.Pair;
 import com.twitter.joauth.Signer;
 import com.twitter.joauth.UrlCodec;
 
-public class MyAuth {
+public class OAuth1HeaderBuilder {
 
   private final Signer signer;
 
@@ -33,7 +31,7 @@ public class MyAuth {
 
   private final SecureRandom secureRandom;
 
-  public MyAuth(String consumerKey, String consumerSecret, String token, String tokenSecret) {
+  public OAuth1HeaderBuilder(String consumerKey, String consumerSecret, String token, String tokenSecret) {
     this.consumerKey = consumerKey;
     this.consumerSecret = consumerSecret;
     

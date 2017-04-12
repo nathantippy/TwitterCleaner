@@ -10,23 +10,18 @@
     </properties>
   
     <dependencies>
-
-	    <dependency>
-	           <groupId>org.twitter4j</groupId>
-	           <artifactId>twitter4j-core</artifactId>
-	           <version>[4.0,)</version>
-	    </dependency>	       
+    
 	
 	    <dependency>
 	      <groupId>com.twitter</groupId>
 	      <artifactId>hbc-twitter4j</artifactId>
 	      <version>2.2.0</version>
 	    </dependency>
-    
+        
         <dependency>
             <groupId>com.ociweb</groupId>
-            <artifactId>Pronghorn</artifactId>
-           <version>[0.0.9,0.1.0-SNAPSHOT)</version>
+            <artifactId>GreenLightning</artifactId>
+           <version>[0.0.1,0.1.0-SNAPSHOT)</version>
         </dependency>
 
         <dependency>
