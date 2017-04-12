@@ -13,6 +13,8 @@ import com.ociweb.twitter.schema.TwitterEventSchema;
 public class TwitterCleanupServerBehavior implements GreenApp {
 
 	private int REST_ROUTE;
+	private int STATIC_FILE_ROUTE;
+	
 	private final List<CustomerAuth> users;
 	
 	public TwitterCleanupServerBehavior(List<CustomerAuth> users) {
@@ -22,13 +24,23 @@ public class TwitterCleanupServerBehavior implements GreenApp {
 	@Override
 	public void declareConfiguration(Builder builder) {
 
-		boolean isTLS = false;
-		boolean isLarge = true;
+		boolean isTLS = true;
+		boolean isLarge = false;
 		String bindHost = "127.0.0.1";
 		int bindPort = 8081;
 		builder.enableServer(isTLS, isLarge, bindHost, bindPort);
+		builder.parallelism(2);
+		
+		builder.setDefaultRate(20_000_000); //20 ms
+		
+		//TODO: do not enable, it will max out CPU, need to investigate....
+		//builder.limitThreads(); //looks at the hardware and picks an appropriate value.
 
-		REST_ROUTE = builder.registerRoute("/unfollow?user=%i");
+		REST_ROUTE = builder.registerRoute("/unfollow?user=%u");
+		STATIC_FILE_ROUTE = builder.registerRoute("/%b");//TODO: if this is first it ignores the rest of the paths, should fix someday...
+		
+		
+		builder.enableTelemetry(true);
 		
 		//TODO: Nathan needs to add default 404 support incaase the URL is spelled wrong.
 		
@@ -40,22 +52,20 @@ public class TwitterCleanupServerBehavior implements GreenApp {
 		//TODO: need to span one gm to another here so we can rebuild users data. (use disk hand off just before publish after dupe removal)
 		
 		GraphManager gm = GreenRuntime.getGraphManager(runtime);
-		GraphManager.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//every 20 ms
+		//GraphManager.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//every 20 ms
 				
 		for(CustomerAuth a: users) {
 			Pipe<TwitterEventSchema> tweets = TwitterGraphBuilder.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.secret);		
 		
-			//TODO: must add language filter here
+			Pipe<TwitterEventSchema> sellers = TwitterGraphBuilder.bookSellers(gm, tweets);
 			
-			//TODO: must add duplicate filter.
-			
-			
-		
-			
-			TwitterGraphBuilder.publishEvents(gm, "unfollow", runtime, a, tweets);
+			//TODO: must add duplicate filter...
+						
+			TwitterGraphBuilder.publishEvents(gm, "unfollow", runtime, a, sellers);
 		}
 			
-		
+		int maxClients = 10;
+		runtime.addRestListener(new SuggestionListRestModule(runtime, maxClients),REST_ROUTE).addSubscription("unfollow"); //TODO: will become  unfollow/%u
 		
 		
 	}
@@ -63,8 +73,9 @@ public class TwitterCleanupServerBehavior implements GreenApp {
 	@Override
 	public void declareParallelBehavior(GreenRuntime runtime) {
 
-		int maxClients = 10;
-		runtime.addRestListener(new SuggestionListRestModule(runtime, maxClients),REST_ROUTE).addSubscription("unfollow"); //TODO: will become  unfollow/%u
+		
+		
+		runtime.addFileServer("/site/index.html", STATIC_FILE_ROUTE); 
 		
 	}
 

@@ -27,6 +27,8 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 	private final LongHashTable lookupTable;
 	private int clientIdCounter;
     
+	private byte[] responseHeader = "{\"data\":[".getBytes();
+	private byte[] responseTail = "]}".getBytes();
 	
 	public SuggestionListRestModule(final GreenRuntime runtime, int maxClients) {
 		
@@ -49,6 +51,11 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 		}
 	}
 
+	int bodyPos = -1;
+	int bodyLen = 0;
+	byte[] bodyBacking = null;
+	int bodyMask = 0;
+	
 	@Override
 	public boolean restRequest(int routeId, long connectionId, long sequenceCode, HTTPVerb verb, final PayloadReader request) {
 		
@@ -62,33 +69,72 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 		
 		
 		Pipe<RawDataSchema> buffer = resultsBuffer[lookupPipeIdx(user)];
+							
+		asNeededCollectNewBody(buffer);
+			
+		int length = responseHeader.length + responseTail.length + bodyLen;	
 		
-				
-		int length = -1;		
 		Optional<NetResponseWriter> writer = cc.openHTTPResponse(connectionId, sequenceCode, statusCode, context, contentType, length);
 		 
 		writer.ifPresent((outputStream)->{
 			 
-			outputStream.writeUTF8Text("{\"data\":");
-			
-			//TODO: check pipe length
-			int max = 4;
-			while (--max>=0 && PipeReader.tryReadFragment(buffer)) 	{
-				
-					DataInputBlobReader<RawDataSchema> input = PipeReader.inputStream(buffer, RawDataSchema.MSG_CHUNKEDSTREAM_1_FIELD_BYTEARRAY_2);				
-					outputStream.writeStream(input, input.available());
-					
-					PipeReader.releaseReadLock(buffer);
-					
+			if (bodyLen>0) {
+				bodyLen--;//remove last comma;
 			}
 			
-			outputStream.writeUTF8Text("}");	
-	
-			outputStream.publish(); 
-		
+			outputStream.write(responseHeader);
+			outputStream.write(bodyBacking, bodyPos, bodyLen, bodyMask);			
+			outputStream.write(responseTail);	
+			outputStream.close(); 
+			
+			//only after it gets written...
+			Pipe.releaseAllPendingReadLock(buffer);
+			bodyPos = -1;
+			bodyLen = 0;
+			
+			
 		 } );
 
 		return writer.isPresent();
+	}
+
+	private void asNeededCollectNewBody(Pipe<RawDataSchema> buffer) {
+		if (bodyPos<0) {
+		
+			int limit = cc.maxHTTPContentLength-responseHeader.length+responseTail.length;
+			if (Pipe.peekMsg(buffer, RawDataSchema.MSG_CHUNKEDSTREAM_1) && (Pipe.peekInt(buffer, 2)<limit) ) {
+				
+				Pipe.takeMsgIdx(buffer);
+				int meta = Pipe.takeRingByteMetaData(buffer);
+				int len = Pipe.takeRingByteMetaData(buffer);
+
+				bodyLen = 0;
+				bodyPos = Pipe.bytePosition(meta, buffer, len);
+				bodyBacking = Pipe.byteBackingArray(meta, buffer);
+				bodyMask = Pipe.blobMask(buffer);
+				
+				limit -= len;
+				bodyLen += len;
+				
+				Pipe.confirmLowLevelRead(buffer, Pipe.sizeOf(RawDataSchema.instance, RawDataSchema.MSG_CHUNKEDSTREAM_1));
+				Pipe.readNextWithoutReleasingReadLock(buffer);//hold until we write it all.
+				
+				while (Pipe.peekMsg(buffer, RawDataSchema.MSG_CHUNKEDSTREAM_1) && (Pipe.peekInt(buffer, 2)<limit) ) {
+					
+					Pipe.takeMsgIdx(buffer);
+					Pipe.takeRingByteMetaData(buffer);
+					int len2 = Pipe.takeRingByteMetaData(buffer);
+						
+					limit -= len2;
+					bodyLen += len2;
+					
+					Pipe.confirmLowLevelRead(buffer, Pipe.sizeOf(RawDataSchema.instance, RawDataSchema.MSG_CHUNKEDSTREAM_1));
+					Pipe.readNextWithoutReleasingReadLock(buffer);//hold until we write it all.
+					
+				}
+			}
+		
+		}
 	}
 
 	@Override

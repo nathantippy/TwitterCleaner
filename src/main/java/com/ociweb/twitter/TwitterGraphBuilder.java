@@ -1,5 +1,8 @@
 package com.ociweb.twitter;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+
 import com.ociweb.gl.api.CommandChannel;
 import com.ociweb.gl.api.GreenRuntime;
 import com.ociweb.pronghorn.network.NetGraphBuilder;
@@ -8,11 +11,14 @@ import com.ociweb.pronghorn.network.schema.NetResponseSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeConfig;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
+import com.ociweb.pronghorn.stage.test.PipeCleanerStage;
 import com.ociweb.twitter.schema.TwitterEventSchema;
 import com.ociweb.twitter.schema.TwitterStreamControlSchema;
 import com.ociweb.twitter.stages.PublishTwitterUsersStage;
 import com.ociweb.twitter.stages.RequestTwitterUserStreamStage;
 import com.ociweb.twitter.stages.json.TwitterJSONToTwitterEventsStage;
+import com.ociweb.twitter.stages.text.TextContentRouterBloom;
+import com.ociweb.twitter.stages.text.TextContentRouterStage;
 
 public class TwitterGraphBuilder {
 	
@@ -65,36 +71,35 @@ public class TwitterGraphBuilder {
 		new PublishTwitterUsersStage(gm, topic, a, tweets, runtime.newCommandChannel(CommandChannel.DYNAMIC_MESSAGING));
 		
 	}
-
 	
-//	public static void buildSomething(Pipe<TwitterEventSchema> input) {
-//		
-//		
-//		PipeConfig<TwitterEventSchema> hoseFeedPipeConfig = new PipeConfig<TwitterEventSchema>(TwitterEventSchema.instance, 100, 1024);		
-//	//	Pipe<TwitterEventSchema> output = new Pipe<TwitterEventSchema>(hoseFeedPipeConfig);		
-//		Pipe<TwitterEventSchema>[] results = new Pipe[2];		
-//		results[0] = new Pipe<TwitterEventSchema>(hoseFeedPipeConfig);
-//		results[1] = new Pipe<TwitterEventSchema>(hoseFeedPipeConfig);	
-//		
-//		PronghornStage consumeA = new PipeCleanerStage(gm, results[0]);		
-//	//	PronghornStage consumeA = new ConsoleJSONDumpStage(gm, results[0]);		
-//		PronghornStage consumeB = new ConsoleJSONDumpStage(gm, results[1]);	
-//		
-//		
-//		int field = TwitterEventSchema.MSG_USERPOST_101_FIELD_TEXT_22;
-//		TextContentRouterBloom rules;
-//		try {
-//			rules = new TextContentRouterBloom(
-//					                           new ObjectInputStream( GraphExamples.class.getResourceAsStream("/bookWords.dat")),
-//					                            0,1);
-//			TextContentRouterStage router = new TextContentRouterStage(gm, input, results, field, rules);
-//			
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
+	public static Pipe<TwitterEventSchema>  bookSellers(GraphManager gm, Pipe<TwitterEventSchema> input) {
+		
+		
+		PipeConfig<TwitterEventSchema> hoseFeedPipeConfig = new PipeConfig<TwitterEventSchema>(TwitterEventSchema.instance, 100, 1024);		
+	
+		Pipe<TwitterEventSchema>[] results = new Pipe[2];		
+		results[0] = new Pipe<TwitterEventSchema>(hoseFeedPipeConfig);
+		results[1] = new Pipe<TwitterEventSchema>(hoseFeedPipeConfig);
+		
+		PipeCleanerStage.newInstance(gm, results[0]);		
+		
+		
+		int field = TwitterEventSchema.MSG_USERPOST_101_FIELD_TEXT_22;
+		TextContentRouterBloom rules;
+		try {
+			rules = new TextContentRouterBloom(
+					                           new ObjectInputStream( TwitterGraphBuilder.class.getResourceAsStream("/bookWords.dat")),
+					                            0,1);
+			TextContentRouterStage router = new TextContentRouterStage(gm, input, results, field, rules);
+			
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return results[1];
+	}
 	
 	
 	
