@@ -10,7 +10,7 @@ import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.util.ByteConsumer;
 import com.ociweb.pronghorn.util.TrieParser;
 import com.ociweb.pronghorn.util.TrieParserReader;
-import com.ociweb.twitter.stages.json.TwitterEventSchema;
+import com.ociweb.twitter.schema.TwitterEventSchema;
 
 public class TextContentRouterStage extends PronghornStage {
 

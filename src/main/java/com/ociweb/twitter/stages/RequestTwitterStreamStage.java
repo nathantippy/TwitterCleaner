@@ -23,7 +23,7 @@ import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.util.Appendables;
 import com.ociweb.pronghorn.util.TrieParserReader;
 import com.ociweb.pronghorn.util.parse.JSONParser;
-import com.ociweb.twitter.HoseBirdSubscriptionSchema;
+import com.ociweb.twitter.schema.HoseBirdSubscriptionSchema;
 
 public class RequestTwitterStreamStage extends PronghornStage {
 

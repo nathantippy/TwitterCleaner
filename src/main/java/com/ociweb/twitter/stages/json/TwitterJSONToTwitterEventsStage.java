@@ -10,7 +10,8 @@ import com.ociweb.pronghorn.pipe.PipeWriter;
 import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.util.parse.MapJSONToPipeBuilder;
-import com.ociweb.twitter.TwitterStreamControlSchema;
+import com.ociweb.twitter.schema.TwitterEventSchema;
+import com.ociweb.twitter.schema.TwitterStreamControlSchema;
 
 public class TwitterJSONToTwitterEventsStage extends NetResponseJSONStage<TwitterEventSchema,TwitterKey> {
 

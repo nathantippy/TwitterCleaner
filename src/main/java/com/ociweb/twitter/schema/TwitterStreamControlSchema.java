@@ -1,4 +1,4 @@
-package com.ociweb.twitter;
+package com.ociweb.twitter.schema;
 
 import com.ociweb.pronghorn.pipe.FieldReferenceOffsetManager;
 import com.ociweb.pronghorn.pipe.MessageSchema;

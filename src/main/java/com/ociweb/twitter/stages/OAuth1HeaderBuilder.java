@@ -1,4 +1,4 @@
-package com.ociweb.twitter;
+package com.ociweb.twitter.stages;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;

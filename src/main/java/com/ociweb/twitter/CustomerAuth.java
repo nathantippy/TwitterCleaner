@@ -1,6 +1,6 @@
 package com.ociweb.twitter;
 
-public class Auth {
+public class CustomerAuth {
 	
 	public final String consumerKey;
 	public final String consumerSecret;
@@ -9,7 +9,7 @@ public class Auth {
 	public final long   id;
 	//add name, screen name and other etc.
 	
-	public Auth(String consumerKey, String consumerSecret, String token, String secret, long id ) {
+	public CustomerAuth(String consumerKey, String consumerSecret, String token, String secret, long id ) {
 		this.consumerKey = consumerKey;
 		this.consumerSecret = consumerSecret;
 		this.token = token;

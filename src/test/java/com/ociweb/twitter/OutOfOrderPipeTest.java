@@ -9,7 +9,7 @@ import com.ociweb.pronghorn.pipe.MessageSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeReader;
 import com.ociweb.pronghorn.pipe.PipeWriter;
-import com.ociweb.twitter.stages.json.TwitterEventSchema;
+import com.ociweb.twitter.schema.TwitterEventSchema;
 
 public class OutOfOrderPipeTest {
 

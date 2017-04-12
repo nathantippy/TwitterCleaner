@@ -4,7 +4,7 @@ import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeReader;
 import com.ociweb.pronghorn.stage.PronghornStage;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
-import com.ociweb.twitter.stages.json.TwitterEventSchema;
+import com.ociweb.twitter.schema.TwitterEventSchema;
 
 public class TwitterEventDumpStage extends PronghornStage {
 

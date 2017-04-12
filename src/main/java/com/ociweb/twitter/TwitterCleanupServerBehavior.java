@@ -7,14 +7,15 @@ import com.ociweb.gl.api.GreenApp;
 import com.ociweb.gl.api.GreenRuntime;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
-import com.ociweb.twitter.stages.json.TwitterEventSchema;
+import com.ociweb.twitter.rest.SuggestionListRestModule;
+import com.ociweb.twitter.schema.TwitterEventSchema;
 
-public class ExampleApp implements GreenApp {
+public class TwitterCleanupServerBehavior implements GreenApp {
 
 	private int REST_ROUTE;
-	private final List<Auth> users;
+	private final List<CustomerAuth> users;
 	
-	public ExampleApp(List<Auth> users) {
+	public TwitterCleanupServerBehavior(List<CustomerAuth> users) {
 		this.users = users;
 	}
 	
@@ -41,7 +42,7 @@ public class ExampleApp implements GreenApp {
 		GraphManager gm = GreenRuntime.getGraphManager(runtime);
 		GraphManager.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//every 20 ms
 				
-		for(Auth a: users) {
+		for(CustomerAuth a: users) {
 			Pipe<TwitterEventSchema> tweets = TwitterGraphBuilder.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.secret);		
 		
 			//TODO: must add language filter here
@@ -57,14 +58,13 @@ public class ExampleApp implements GreenApp {
 		
 		
 		
-		
 	}
 
 	@Override
 	public void declareParallelBehavior(GreenRuntime runtime) {
 
 		int maxClients = 10;
-		runtime.addRestListener(new ExampleREST(runtime, maxClients),REST_ROUTE).addSubscription("unfollow"); //TODO: will become  unfollow/%u
+		runtime.addRestListener(new SuggestionListRestModule(runtime, maxClients),REST_ROUTE).addSubscription("unfollow"); //TODO: will become  unfollow/%u
 		
 	}
 

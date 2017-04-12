@@ -5,7 +5,9 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.ociweb.pronghorn.pipe.util.build.FROMValidation;
-import com.ociweb.twitter.stages.json.TwitterEventSchema;
+import com.ociweb.twitter.schema.HoseBirdSubscriptionSchema;
+import com.ociweb.twitter.schema.TwitterEventSchema;
+import com.ociweb.twitter.schema.TwitterStreamControlSchema;
 
 public class SchemasTest {
 

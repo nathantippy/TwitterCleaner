@@ -6,8 +6,7 @@ import com.ociweb.pronghorn.pipe.PipeReader;
 import com.ociweb.pronghorn.pipe.PipeWriter;
 import com.ociweb.pronghorn.stage.PronghornStage;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
-import com.ociweb.twitter.OAuth1HeaderBuilder;
-import com.ociweb.twitter.TwitterStreamControlSchema;
+import com.ociweb.twitter.schema.TwitterStreamControlSchema;
 
 public class RequestTwitterUserStreamStage extends PronghornStage {
 

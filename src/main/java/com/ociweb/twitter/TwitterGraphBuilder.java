@@ -1,7 +1,5 @@
 package com.ociweb.twitter;
 
-import java.io.ObjectInputStream;
-
 import com.ociweb.gl.api.CommandChannel;
 import com.ociweb.gl.api.GreenRuntime;
 import com.ociweb.pronghorn.network.NetGraphBuilder;
@@ -10,11 +8,11 @@ import com.ociweb.pronghorn.network.schema.NetResponseSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeConfig;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
+import com.ociweb.twitter.schema.TwitterEventSchema;
+import com.ociweb.twitter.schema.TwitterStreamControlSchema;
+import com.ociweb.twitter.stages.PublishTwitterUsersStage;
 import com.ociweb.twitter.stages.RequestTwitterUserStreamStage;
-import com.ociweb.twitter.stages.json.TwitterEventSchema;
 import com.ociweb.twitter.stages.json.TwitterJSONToTwitterEventsStage;
-import com.ociweb.twitter.stages.text.TextContentRouterBloom;
-import com.ociweb.twitter.stages.text.TextContentRouterStage;
 
 public class TwitterGraphBuilder {
 	
@@ -62,7 +60,7 @@ public class TwitterGraphBuilder {
 	
 	}
 
-	public static void publishEvents(GraphManager gm, String topic, GreenRuntime runtime, Auth a, Pipe<TwitterEventSchema> tweets) {
+	public static void publishEvents(GraphManager gm, String topic, GreenRuntime runtime, CustomerAuth a, Pipe<TwitterEventSchema> tweets) {
 				
 		new PublishTwitterUsersStage(gm, topic, a, tweets, runtime.newCommandChannel(CommandChannel.DYNAMIC_MESSAGING));
 		

@@ -1,4 +1,4 @@
-package com.ociweb.twitter;
+package com.ociweb.twitter.rest;
 
 import java.util.Optional;
 
@@ -19,7 +19,7 @@ import com.ociweb.pronghorn.pipe.RawDataSchema;
 import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.util.Appendables;
 
-public class ExampleREST implements RestListener, PubSubListener {
+public class SuggestionListRestModule implements RestListener, PubSubListener {
 
 	private final CommandChannel cc;
 	private final Pipe<RawDataSchema>[] resultsBuffer;
@@ -27,7 +27,8 @@ public class ExampleREST implements RestListener, PubSubListener {
 	private final LongHashTable lookupTable;
 	private int clientIdCounter;
     
-	public ExampleREST(final GreenRuntime runtime, int maxClients) {
+	
+	public SuggestionListRestModule(final GreenRuntime runtime, int maxClients) {
 		
 		this.cc = runtime.newCommandChannel(CommandChannel.NET_RESPONDER);
        
@@ -86,9 +87,7 @@ public class ExampleREST implements RestListener, PubSubListener {
 			outputStream.publish(); 
 		
 		 } );
-		
-		
-		
+
 		return writer.isPresent();
 	}
 

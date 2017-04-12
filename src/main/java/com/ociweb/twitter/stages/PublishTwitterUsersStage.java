@@ -1,4 +1,4 @@
-package com.ociweb.twitter;
+package com.ociweb.twitter.stages;
 
 import com.ociweb.gl.api.CommandChannel;
 import com.ociweb.pronghorn.pipe.DataInputBlobReader;
@@ -6,16 +6,17 @@ import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeReader;
 import com.ociweb.pronghorn.stage.PronghornStage;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
-import com.ociweb.twitter.stages.json.TwitterEventSchema;
+import com.ociweb.twitter.CustomerAuth;
+import com.ociweb.twitter.schema.TwitterEventSchema;
 
 public class PublishTwitterUsersStage extends PronghornStage {
 
 	private final CommandChannel cc;
 	private final String topic; 
-	private final Auth a;
+	private final CustomerAuth a;
 	private final Pipe<TwitterEventSchema> input;
 	
-	protected PublishTwitterUsersStage(GraphManager graphManager, String topicRoot, Auth a, Pipe<TwitterEventSchema> input, CommandChannel cc) {
+	public PublishTwitterUsersStage(GraphManager graphManager, String topicRoot, CustomerAuth a, Pipe<TwitterEventSchema> input, CommandChannel cc) {
 		
 		super(graphManager, input, CommandChannel.getOutputPipes(cc));
 		
