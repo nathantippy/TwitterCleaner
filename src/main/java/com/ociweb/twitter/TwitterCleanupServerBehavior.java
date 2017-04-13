@@ -31,7 +31,7 @@ public class TwitterCleanupServerBehavior implements GreenApp {
 		builder.enableServer(isTLS, isLarge, bindHost, bindPort);
 		builder.parallelism(2);
 		
-		builder.setDefaultRate(20_000_000); //20 ms
+		builder.setDefaultRate(10_000_000); //10 ms
 		
 		//TODO: do not enable, it will max out CPU, need to investigate....
 		//builder.limitThreads(); //looks at the hardware and picks an appropriate value.
@@ -61,7 +61,7 @@ public class TwitterCleanupServerBehavior implements GreenApp {
 			
 			//TODO: must add duplicate filter...
 						
-			TwitterGraphBuilder.publishEvents(gm, "unfollow", runtime, a, sellers);
+			TwitterGraphBuilder.publishEvents(gm, "unfollow", runtime, a, sellers); 
 		}
 			
 		int maxClients = 10;

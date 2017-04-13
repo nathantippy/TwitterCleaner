@@ -72,18 +72,14 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 							
 		asNeededCollectNewBody(buffer);
 			
-		int length = responseHeader.length + responseTail.length + bodyLen;	
+		int length = responseHeader.length + responseTail.length + (bodyLen>0?(bodyLen-1):0);	
 		
 		Optional<NetResponseWriter> writer = cc.openHTTPResponse(connectionId, sequenceCode, statusCode, context, contentType, length);
 		 
 		writer.ifPresent((outputStream)->{
-			 
-			if (bodyLen>0) {
-				bodyLen--;//remove last comma;
-			}
-			
+	
 			outputStream.write(responseHeader);
-			outputStream.write(bodyBacking, bodyPos, bodyLen, bodyMask);			
+			outputStream.write(bodyBacking, bodyPos, (bodyLen>0?(bodyLen-1):0), bodyMask); //skips last commas in body.			
 			outputStream.write(responseTail);	
 			outputStream.close(); 
 			

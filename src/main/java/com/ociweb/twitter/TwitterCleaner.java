@@ -1,59 +1,10 @@
 package com.ociweb.twitter;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.ObjectInputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import com.ociweb.gl.api.GreenRuntime;
-import com.ociweb.pronghorn.network.NetResponseDumpStage;
-import com.ociweb.pronghorn.network.NetResponseJSONStage;
-import com.ociweb.pronghorn.network.schema.ClientHTTPRequestSchema;
-import com.ociweb.pronghorn.pipe.MessageSchema;
-import com.ociweb.pronghorn.pipe.Pipe;
-import com.ociweb.pronghorn.pipe.PipeWriter;
-import com.ociweb.pronghorn.pipe.util.hash.IntHashTable;
-import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
-import com.ociweb.pronghorn.stage.PronghornStage;
-import com.ociweb.pronghorn.stage.monitor.MonitorConsoleStage;
-import com.ociweb.pronghorn.stage.scheduling.GraphManager;
-import com.ociweb.pronghorn.stage.scheduling.ThreadPerStageScheduler;
-import com.ociweb.pronghorn.stage.test.ConsoleJSONDumpStage;
-import com.ociweb.pronghorn.stage.test.PipeCleanerStage;
-import com.ociweb.pronghorn.util.Appendables;
-import com.ociweb.pronghorn.util.RollingBloomFilter;
-import com.ociweb.pronghorn.util.TrieParser;
-import com.ociweb.pronghorn.util.TrieParserReader;
-import com.ociweb.pronghorn.util.parse.JSONStreamParser;
-import com.ociweb.pronghorn.util.parse.JSONStreamVisitorCapture;
 import com.ociweb.pronghorn.util.parse.JSONStreamVisitorEnumGenerator;
-import com.ociweb.pronghorn.util.parse.JSONStreamVisitorToPipe;
-import com.ociweb.pronghorn.util.parse.MapJSONToPipeBuilder;
-import com.ociweb.twitter.schema.TwitterEventSchema;
-import com.ociweb.twitter.stages.OAuth2ParserStage;
-import com.ociweb.twitter.stages.RequestTwitterStreamStage;
-import com.ociweb.twitter.stages.TwitterEventDumpStage;
-import com.ociweb.twitter.stages.json.TwitterKey;
-import com.ociweb.twitter.stages.text.TextContentRouterBloom;
-import com.ociweb.twitter.stages.text.TextContentRouterStage;
-import com.twitter.hbc.httpclient.auth.Authentication;
-import com.twitter.hbc.httpclient.auth.OAuth1;
-
-import twitter4j.JSONObject;
 
 public class TwitterCleaner  {
 
