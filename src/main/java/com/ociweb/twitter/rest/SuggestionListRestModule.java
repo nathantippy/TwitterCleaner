@@ -18,6 +18,7 @@ import com.ociweb.pronghorn.pipe.PipeWriter;
 import com.ociweb.pronghorn.pipe.RawDataSchema;
 import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.util.Appendables;
+import com.ociweb.pronghorn.util.TopicUtil;
 
 public class SuggestionListRestModule implements RestListener, PubSubListener {
 
@@ -136,14 +137,9 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 	@Override
 	public boolean message(CharSequence topic, PayloadReader payload) {
 
-		
-		System.err.println("got new message: "+topic);
-		
-		
-		//CharSequence[] topicLevels = Appendables.split(topic, '/');		
 		//0 = major topic (follow or unflollow)
 		//1 = twitter clientId long numeric
-		long clientId = 0;//TopicUtil.extractLong(topic,1);
+		long clientId = TopicUtil.extractLong(topic,1); 
 		Pipe<RawDataSchema> buffer = resultsBuffer[lookupPipeIdx(clientId)];
 		
 		while (payload.hasRemainingBytes()) {
@@ -191,17 +187,14 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 	}
 
 	private int lookupPipeIdx(long userId) {
-		
-		//System.err.println("lookup user "+userId);
-		
-		return 0;
-//		if (LongHashTable.hasItem(lookupTable, userId)) {
-//			return LongHashTable.getItem(lookupTable, userId);
-//		} else {
-//			int newValue = clientIdCounter++;			
-//			LongHashTable.setItem(lookupTable, userId, newValue);
-//			return newValue;
-//		}
+
+		if (LongHashTable.hasItem(lookupTable, userId)) {
+			return LongHashTable.getItem(lookupTable, userId);
+		} else {
+			int newValue = clientIdCounter++;			
+			LongHashTable.setItem(lookupTable, userId, newValue);
+			return newValue;
+		}
 		
 	}
 

@@ -21,7 +21,7 @@ public class PublishTwitterUsersStage extends PronghornStage {
 		super(graphManager, input, CommandChannel.getOutputPipes(cc));
 		
 		this.cc = cc;
-		this.topic = topicRoot;//+"/"+a.id; //TODO: not garbage free, fix 
+		this.topic = topicRoot;
 		
 		this.a = a;
 		this.input = input;
@@ -40,7 +40,7 @@ public class PublishTwitterUsersStage extends PronghornStage {
 				
 		if (PipeReader.peekMsg(input, TwitterEventSchema.MSG_USERPOST_101)) {
 			//there is no undo of this open so we peek first to ensure we will be needing it.
-						
+	
 			cc.openTopic(topic).ifPresent((writer) -> {
 				boolean ok = PipeReader.tryReadFragment(input);
 				assert(ok) : "we just checked this so it should not have failed";

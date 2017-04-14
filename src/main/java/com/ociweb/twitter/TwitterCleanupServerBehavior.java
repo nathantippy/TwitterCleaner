@@ -60,13 +60,14 @@ public class TwitterCleanupServerBehavior implements GreenApp {
 			Pipe<TwitterEventSchema> sellers = TwitterGraphBuilder.bookSellers(gm, tweets);
 			
 			//TODO: must add duplicate filter...
-						
-			TwitterGraphBuilder.publishEvents(gm, "unfollow", runtime, a, sellers); 
+
+			
+			
+			TwitterGraphBuilder.publishEvents(gm, "unfollow/"+a.id, runtime, a, sellers); 
 		}
 			
 		int maxClients = 10;
-		runtime.addRestListener(new SuggestionListRestModule(runtime, maxClients),REST_ROUTE).addSubscription("unfollow"); //TODO: will become  unfollow/%u
-		
+		runtime.addRestListener(new SuggestionListRestModule(runtime, maxClients),REST_ROUTE).addSubscription("unfollow/%u");
 		
 	}
 

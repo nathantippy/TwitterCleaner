@@ -8,12 +8,14 @@ import com.ociweb.gl.api.GreenRuntime;
 import com.ociweb.pronghorn.network.NetGraphBuilder;
 import com.ociweb.pronghorn.network.schema.ClientHTTPRequestSchema;
 import com.ociweb.pronghorn.network.schema.NetResponseSchema;
+import com.ociweb.pronghorn.pipe.MessageSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeConfig;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.stage.test.PipeCleanerStage;
 import com.ociweb.twitter.schema.TwitterEventSchema;
 import com.ociweb.twitter.schema.TwitterStreamControlSchema;
+import com.ociweb.twitter.stages.FlagFilterStage;
 import com.ociweb.twitter.stages.PublishTwitterUsersStage;
 import com.ociweb.twitter.stages.RequestTwitterUserStreamStage;
 import com.ociweb.twitter.stages.json.TwitterJSONToTwitterEventsStage;
@@ -71,6 +73,15 @@ public class TwitterGraphBuilder {
 		new PublishTwitterUsersStage(gm, topic, a, tweets, runtime.newCommandChannel(CommandChannel.DYNAMIC_MESSAGING));
 		
 	}
+	
+	public static Pipe<TwitterEventSchema> possiblySensistive(GraphManager gm, Pipe<TwitterEventSchema> input) {
+		
+		Pipe<TwitterEventSchema> results = TwitterEventSchema.instance.newPipe(100, 1024);
+		new FlagFilterStage(gm, input, results, TwitterEventSchema.MSG_USER_100_FIELD_FLAGS_31, TwitterEventSchema.FLAG_POSSIBLY_SENSITIVE);
+		return results;
+		
+	}
+			
 	
 	public static Pipe<TwitterEventSchema>  bookSellers(GraphManager gm, Pipe<TwitterEventSchema> input) {
 		
