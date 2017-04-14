@@ -1,5 +1,6 @@
 package com.ociweb.twitter;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
@@ -11,6 +12,8 @@ import com.ociweb.pronghorn.network.schema.NetResponseSchema;
 import com.ociweb.pronghorn.pipe.MessageSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeConfig;
+import com.ociweb.pronghorn.stage.filter.PassRepeatsFilterStage;
+import com.ociweb.pronghorn.stage.filter.PassUniquesFilterStage;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.stage.test.PipeCleanerStage;
 import com.ociweb.twitter.schema.TwitterEventSchema;
@@ -81,16 +84,37 @@ public class TwitterGraphBuilder {
 		return results;
 		
 	}
+	
+	/**
+	 * Messages will only pass if the selected field contains a unique string that has not been seen before.
+	 */
+	public static Pipe<TwitterEventSchema> uniqueFieldFilter(GraphManager gm, Pipe<TwitterEventSchema> input, int field, File storageFile) {
+		
+		Pipe<TwitterEventSchema> results = TwitterEventSchema.instance.newPipe(100, 1024);		
+		new PassUniquesFilterStage<>(gm, input, results, field, storageFile);		
+		return results;
+		
+	}	
 			
+	/**
+	 * Messages will only pass if the selected field repeats some value repeatCount times, then it will pass the message along
+	 */
+	public static Pipe<TwitterEventSchema> repeatingFieldFilter(GraphManager gm, Pipe<TwitterEventSchema> input, int repeatCount, int field, File storageFile) {
+		
+		Pipe<TwitterEventSchema> results = TwitterEventSchema.instance.newPipe(100, 1024);		
+		new PassRepeatsFilterStage(gm, input, results, repeatCount, field, storageFile);		
+		return results;
+		
+	}	
 	
 	public static Pipe<TwitterEventSchema>  bookSellers(GraphManager gm, Pipe<TwitterEventSchema> input) {
 		
 		
-		PipeConfig<TwitterEventSchema> hoseFeedPipeConfig = new PipeConfig<TwitterEventSchema>(TwitterEventSchema.instance, 100, 1024);		
+		PipeConfig<TwitterEventSchema> pipeConfig = TwitterEventSchema.instance.newPipeConfig(100, 1024);		
 	
 		Pipe<TwitterEventSchema>[] results = new Pipe[2];		
-		results[0] = new Pipe<TwitterEventSchema>(hoseFeedPipeConfig);
-		results[1] = new Pipe<TwitterEventSchema>(hoseFeedPipeConfig);
+		results[0] = new Pipe<TwitterEventSchema>(pipeConfig);
+		results[1] = new Pipe<TwitterEventSchema>(pipeConfig);
 		
 		PipeCleanerStage.newInstance(gm, results[0]);		
 		

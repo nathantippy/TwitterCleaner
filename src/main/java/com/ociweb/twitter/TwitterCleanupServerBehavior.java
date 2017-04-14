@@ -1,5 +1,6 @@
 package com.ociweb.twitter;
 
+import java.io.File;
 import java.util.List;
 
 import com.ociweb.gl.api.Builder;
@@ -57,13 +58,19 @@ public class TwitterCleanupServerBehavior implements GreenApp {
 		for(CustomerAuth a: users) {
 			Pipe<TwitterEventSchema> tweets = TwitterGraphBuilder.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.secret);		
 		
+			////////Only pass along those users tweets which are about books.
 			Pipe<TwitterEventSchema> sellers = TwitterGraphBuilder.bookSellers(gm, tweets);
 			
-			//TODO: must add duplicate filter...
-
+			///////We only pass this on as a person to block if they show up 3 times 
+			//NOTE: a file name is passed in to remember the repeat count so we can continue of reboot
+			Pipe<TwitterEventSchema> repeaters = TwitterGraphBuilder.repeatingFieldFilter(gm, sellers, 3, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("repeaters"+a.id+".dat") );
+			
+			//////We only pass this user on if we have never recommended that we un follow them before 
+			//NOTE: a file name is passed in here so it can save "seen" user names and continue to block duplicates after a "reboot"
+			Pipe<TwitterEventSchema> uniques = TwitterGraphBuilder.uniqueFieldFilter(gm, repeaters, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("uniques"+a.id+".dat") );
 			
 			
-			TwitterGraphBuilder.publishEvents(gm, "unfollow/"+a.id, runtime, a, sellers); 
+			TwitterGraphBuilder.publishEvents(gm, "unfollow/"+a.id, runtime, a, uniques); 
 		}
 			
 		int maxClients = 10;
