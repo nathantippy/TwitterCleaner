@@ -9,7 +9,7 @@ public class TextContentSplitter {
     
 	 
 	 public static TrieParserReader reader() {
-		 return new TrieParserReader(2, 0, 2048);
+		 return new TrieParserReader(2);
 	 }
 	 
 
