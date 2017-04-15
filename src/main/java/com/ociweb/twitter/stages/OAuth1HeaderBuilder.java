@@ -1,28 +1,19 @@
 package com.ociweb.twitter.stages;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.http.HttpHeaders;  //TODO: remove with TrieParser
-import org.apache.http.NameValuePair;  //TODO: remove with TrieParser
-import org.apache.http.client.utils.URLEncodedUtils;  //TODO: remove with TrieParser
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 
-import com.google.common.base.Charsets;  //TODO: remove with TrieParser
 import com.ociweb.pronghorn.util.Appendables;
-import com.twitter.joauth.OAuthParams;
-import com.twitter.joauth.Request;
-import com.twitter.joauth.Request.Pair;
-import com.twitter.joauth.Signer;
-import com.twitter.joauth.UrlCodec;
 
 public class OAuth1HeaderBuilder {
-
-  private final Signer signer;
 
   private final String consumerKey;
   private final String consumerSecret;
@@ -30,7 +21,7 @@ public class OAuth1HeaderBuilder {
   private final String tokenSecret;
 
   private final SecureRandom secureRandom;
-
+  
   public OAuth1HeaderBuilder(String consumerKey, String consumerSecret, String token, String tokenSecret) {
     this.consumerKey = consumerKey;
     this.consumerSecret = consumerSecret;
@@ -43,60 +34,48 @@ public class OAuth1HeaderBuilder {
     assert(token!=null);
     assert(tokenSecret!=null);
     
-    this.signer = Signer.getStandardSigner();
-
     this.secureRandom = new SecureRandom();
+    
+    
   }
 
   
-  public void addHeaders(StringBuilder builder, String rawQuery, int port, String scheme, String upperVerb, String host, String path) {
-
-	    List<NameValuePair> httpGetParams = URLEncodedUtils.parse(rawQuery, Charsets.UTF_8);
-	     
-	    
-	    List<Pair> javaParams = new ArrayList<Pair>(httpGetParams.size());
-	    for (NameValuePair params : httpGetParams) {
-	      Pair tuple = new Pair(UrlCodec.encode(params.getName()), UrlCodec.encode(params.getValue()));
-	      javaParams.add(tuple);
-	    }
+  public void addHeaders(StringBuilder builder, List<CharSequence[]> params, int port, String scheme, String upperVerb, String host, String path) {
 
 	    long timestampSecs = generateTimestamp();
 	    String nonce = generateNonce();
 	    
-	    OAuthParams.OAuth1Params oAuth1Params = new OAuthParams.OAuth1Params(
-	    	      token, consumerKey, nonce, timestampSecs, Long.toString(timestampSecs), "",
-	    	      OAuthParams.HMAC_SHA1, OAuthParams.ONE_DOT_OH
-	    	    );
+	    params.add(new CharSequence[]{"oauth_consumer_key",consumerKey}); 
+	    params.add(new CharSequence[]{"oauth_nonce",nonce}); 
+	    params.add(new CharSequence[]{"oauth_token",token});
+	    params.add(new CharSequence[]{"oauth_signature_method","HMAC-SHA1"});
+	    params.add(new CharSequence[]{"oauth_timestamp",Long.toString(timestampSecs)});
+	    params.add(new CharSequence[]{"oauth_version","1.0"});
+	 
 	    
-		// We only need the stringbuilder for the duration of this method
-		  StringBuilder paramsBuilder = new StringBuilder(512);
-		
-		  // first, concatenate the params and the oAuth1Params together.
-		  // the parameters are already URLEncoded, so we leave them alone
-		  ArrayList<Pair> sigParams = new ArrayList<Request.Pair>();
-		  sigParams.addAll(javaParams);
-		  sigParams.addAll(oAuth1Params.toList(false));
-		
-		  Collections.sort(sigParams, new Comparator<Request.Pair>() {
+		  Collections.sort(params, new Comparator<CharSequence[]>() {
 		    @Override
-		    public int compare(Request.Pair thisPair, Request.Pair thatPair) {
+		    public int compare(CharSequence[] thisPair, CharSequence[] thatPair) {
 		      // sort params first by key, then by value
-		      int keyCompare = thisPair.key.compareTo(thatPair.key);
+		      int keyCompare = ((String) thisPair[0]).compareTo((String) thatPair[0]); //TODO: bad cast!!
 		      if (keyCompare == 0) {
-		        return thisPair.value.compareTo(thatPair.value);
+		    	  
+		        return ((String) thisPair[1]).compareTo((String) thatPair[1]); //TODO: bad cast!!
 		      } else {
 		        return keyCompare;
 		      }
 		    }
 		  });
 		
-		  if (!sigParams.isEmpty()) {
-		    Request.Pair head = sigParams.get(0);
-		    paramsBuilder.append(head.key).append('=').append(head.value);
+		  // We only need the stringbuilder for the duration of this method
+		  StringBuilder paramsBuilder = new StringBuilder(512);
+		  if (!params.isEmpty()) {
+			CharSequence[] head = params.get(0);
+		    paramsBuilder.append(head[0]).append('=').append(head[1]);
 		    
-		    for (int i=1; i<sigParams.size(); i++) {
-		      Request.Pair pair = sigParams.get(i);
-		      paramsBuilder.append('&').append(pair.key).append('=').append(pair.value);
+		    for (int i=1; i<params.size(); i++) {
+		      CharSequence[] pair = params.get(i);
+		      paramsBuilder.append('&').append(pair[0]).append('=').append(pair[1]);
 		    }
 		  }
 		
@@ -112,48 +91,51 @@ public class OAuth1HeaderBuilder {
 		  StringBuilder normalizedBuilder = new StringBuilder(512);
 		
 		  normalizedBuilder.append(upperVerb.toUpperCase());
-		  normalizedBuilder.append('&').append(UrlCodec.encode(requestUrlBuilder.toString()));
-		  normalizedBuilder.append('&').append(UrlCodec.encode(paramsBuilder.toString()));
+		  try {
+			normalizedBuilder.append('&').append(URLEncoder.encode(requestUrlBuilder.toString(),"UTF-8"));
+			normalizedBuilder.append('&').append(URLEncoder.encode(paramsBuilder.toString(),"UTF-8"));
+		} catch (UnsupportedEncodingException e1) {
+			throw new RuntimeException(e1);
+		}
 	    
 		
 		String normalized = normalizedBuilder.toString();
-	  
-		//
-	 //   System.out.println(normalized);
-	 //   System.out.println("FAAST EXIT");
-	 //  System.exit(-1);
-	  
-	    
-	    String signature;
-	    try {
-	      signature = signer.getString(normalized, tokenSecret, consumerSecret);
-	    } catch (InvalidKeyException e) {
-	      throw new RuntimeException(e);
-	    } catch (NoSuchAlgorithmException e) {
-	      throw new RuntimeException(e);
-	    }
-	  
-	    
-	    builder.append(HttpHeaders.AUTHORIZATION).append(": ");
-	    
 
-	    builder.append("OAuth ");
-	    builder.append(OAuthParams.OAUTH_CONSUMER_KEY).append("=\"").append((consumerKey)).append("\", ");
-	    builder.append(OAuthParams.OAUTH_TOKEN).append("=\"").append((token)).append("\", ");
+	    String signature;
+	    byte[] bytes;
+	    try {
+	      String key = consumerSecret + "&" + tokenSecret;
+		  byte[] utf8Bytes = key.getBytes(Charset.forName("UTF-8"));
+		  byte[] utf8Bytes2 = normalized.getBytes(Charset.forName("UTF-8"));
+		  
+		  Mac mac = Mac.getInstance("HmacSHA1");
+		  mac.init(new SecretKeySpec(utf8Bytes, "HmacSHA1"));
+		  bytes = mac.doFinal(utf8Bytes2);
+		  
+ 	      signature = Appendables.appendBase64(new StringBuilder(), bytes, 0, bytes.length, Integer.MAX_VALUE).toString();
+ 	      signature = URLEncoder.encode(signature,"UTF-8");
+
+	    } catch (Exception e) {
+	    	throw new RuntimeException(e);
+	    }
 	    
-	    builder.append(OAuthParams.OAUTH_SIGNATURE).append("=\"").append((signature)).append("\", ");
-	    builder.append(OAuthParams.OAUTH_SIGNATURE_METHOD).append("=\"").append((OAuthParams.HMAC_SHA1)).append("\", ");
-	    builder.append(OAuthParams.OAUTH_TIMESTAMP).append('=');
+	    builder.append("Authorization").append(": ");
+	    
+	    builder.append("OAuth ");
+	    builder.append("oauth_consumer_key").append("=\"").append((consumerKey)).append("\", ");
+	    builder.append("oauth_token").append("=\"").append((token)).append("\", ");
+	    
+	    builder.append("oauth_signature").append("=\"").append((signature)).append("\", ");
+	    builder.append("oauth_signature_method").append("=\"").append(("HMAC-SHA1")).append("\", ");
+	    builder.append("oauth_timestamp").append('=');
 	    
 	    Appendables.appendValue(builder, "\"", timestampSecs, "\", ");
 	    
-	    builder.append(OAuthParams.OAUTH_NONCE).append("=\"").append((nonce)).append("\", ");
-	    builder.append(OAuthParams.OAUTH_VERSION).append("=\"").append((OAuthParams.ONE_DOT_OH)).append("\"");
+	    builder.append("oauth_nonce").append("=\"").append((nonce)).append("\", ");
+	    builder.append("oauth_version").append("=\"").append("1.0").append("\"");
   
 	  
   }
-  
-
 
   private long generateTimestamp() {
     long timestamp = System.currentTimeMillis();
@@ -165,12 +147,12 @@ public class OAuth1HeaderBuilder {
   }
 
   /**
-	     * The OAuth 1.0a spec says that the port should not be included in the normalized string
-	     * when (1) it is port 80 and the scheme is HTTP or (2) it is port 443 and the scheme is HTTPS
-	     */
-	    boolean includePortString(int port, String scheme) {
-	      return !((port == 80 && "HTTP".equalsIgnoreCase(scheme)) || (port == 443 && "HTTPS".equalsIgnoreCase(scheme)));
-	    }
+     * The OAuth 1.0a spec says that the port should not be included in the normalized string
+     * when (1) it is port 80 and the scheme is HTTP or (2) it is port 443 and the scheme is HTTPS
+     */
+    boolean includePortString(int port, String scheme) {
+      return !((port == 80 && "HTTP".equalsIgnoreCase(scheme)) || (port == 443 && "HTTPS".equalsIgnoreCase(scheme)));
+    }
 	  
 
 }

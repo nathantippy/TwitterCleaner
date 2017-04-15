@@ -1,8 +1,5 @@
 package com.ociweb.twitter.stages;
 
-import java.io.IOException;
-import java.nio.Buffer;
-
 import com.ociweb.pronghorn.network.config.HTTPHeaderKeyDefaults;
 import com.ociweb.pronghorn.network.schema.NetResponseSchema;
 import com.ociweb.pronghorn.pipe.DataInputBlobReader;

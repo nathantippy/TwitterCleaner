@@ -1,5 +1,8 @@
 package com.ociweb.twitter.stages;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.ociweb.pronghorn.network.schema.ClientHTTPRequestSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeReader;
@@ -7,6 +10,7 @@ import com.ociweb.pronghorn.pipe.PipeWriter;
 import com.ociweb.pronghorn.stage.PronghornStage;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.twitter.schema.TwitterStreamControlSchema;
+
 
 public class RequestTwitterUserStreamStage extends PronghornStage {
 
@@ -81,11 +85,17 @@ public class RequestTwitterUserStreamStage extends PronghornStage {
 		StringBuilder authHeader = new StringBuilder();
 		String rawQuery = "stall_warnings=true&with=followings";
 		String path2 = "/1.1/user.json";
-		myAuth.addHeaders(authHeader, rawQuery, port, "https", "GET", host, path2);
+		
+		List<CharSequence[]> javaParams = new ArrayList<CharSequence[]>(2);		
+		javaParams.add(new CharSequence[]{"stall_warnings","true"}); //NOTE: must be URLEncoder.encode(
+		javaParams.add(new CharSequence[]{"with","followings"}); //NOTE: must be URL encoded
+		
+		
+		myAuth.addHeaders(authHeader, javaParams, port, "https", "GET", host, path2);
 	
 		//TODO: must run for 10K selection multiple times and see if its a different segment, if so this is fine....
 		
-		
+		//TODO: take javaParams collection and append the values here...
 		String path = path2+"?"+rawQuery;///"/1.1/user.json?stall_warnings=true&with=followings";//"/oauth/request_token";
 		// /sitestream.twitter.com/1.1/site.json?follow=6253282 
 		
