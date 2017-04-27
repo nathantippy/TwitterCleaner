@@ -14,35 +14,17 @@ public class SchemasTest {
     
     @Test
     public void testEventsFROMMatchesXML() {
-        assertTrue(FROMValidation.testForMatchingFROMs("/com/ociweb/twitter/pronghorn/TwitterEvent.xml", TwitterEventSchema.instance));
-    };
-    
-    @Test
-    public void testEventsConstantFields() { //too many unused constants.
-        assertTrue(FROMValidation.testForMatchingLocators(TwitterEventSchema.instance));
-    }
-    
-    
-    @Test
-    public void testHoseBirdFROMMatchesXML() {
-        assertTrue(FROMValidation.testForMatchingFROMs("/com/ociweb/twitter/pronghorn/HoseBirdSubscription.xml", HoseBirdSubscriptionSchema.instance));
-    };
-    
-    @Test
-    public void testHoseBirdConstantFields() { //too many unused constants.
-        assertTrue(FROMValidation.testForMatchingLocators(HoseBirdSubscriptionSchema.instance));
+        assertTrue(FROMValidation.checkSchema("/com/ociweb/twitter/pronghorn/TwitterEvent.xml", TwitterEventSchema.class));
     }
 
+    @Test
+    public void testHoseBirdFROMMatchesXML() {
+        assertTrue(FROMValidation.checkSchema("/com/ociweb/twitter/pronghorn/HoseBirdSubscription.xml", HoseBirdSubscriptionSchema.class));
+    }
     
     @Test
     public void testTwitterUserStreamControlSchemaFROMMatchesXML() {
-        assertTrue(FROMValidation.testForMatchingFROMs("/com/ociweb/twitter/pronghorn/TwitterUserStreamControl.xml", TwitterStreamControlSchema.instance));
-    };
-    
-    @Test
-    public void testTwitterUserStreamControlSchemaConstantFields() { //too many unused constants.
-        assertTrue(FROMValidation.testForMatchingLocators(TwitterStreamControlSchema.instance));
+        assertTrue(FROMValidation.checkSchema("/com/ociweb/twitter/pronghorn/TwitterUserStreamControl.xml", TwitterStreamControlSchema.class));
     }
-    
     
 }
