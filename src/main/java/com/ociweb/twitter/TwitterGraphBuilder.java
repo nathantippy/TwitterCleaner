@@ -31,7 +31,7 @@ public class TwitterGraphBuilder {
 		
 		////////////////////////////
 		//pipes for holding all HTTPs client requests
-		///////////////////////////            
+		///////////////////////////*            
 		int maxRequesters = 1;
 		int clientRequestsCount = 8;
 		int clientRequestSize = 1<<12;		
