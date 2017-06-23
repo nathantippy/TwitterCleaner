@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 
-import com.ociweb.gl.api.CommandChannel;
-import com.ociweb.gl.api.GreenRuntime;
+import com.ociweb.gl.api.GreenCommandChannel;
+import com.ociweb.gl.api.MsgRuntime;
 import com.ociweb.pronghorn.network.NetGraphBuilder;
 import com.ociweb.pronghorn.network.schema.ClientHTTPRequestSchema;
 import com.ociweb.pronghorn.network.schema.NetResponseSchema;
@@ -71,9 +71,9 @@ public class TwitterGraphBuilder {
 	
 	}
 
-	public static void publishEvents(GraphManager gm, String topic, GreenRuntime runtime, CustomerAuth a, Pipe<TwitterEventSchema> tweets) {
+	public static void publishEvents(GraphManager gm, String topic, MsgRuntime runtime, CustomerAuth a, Pipe<TwitterEventSchema> tweets) {
 				
-		new PublishTwitterUsersStage(gm, topic, a, tweets, runtime.newCommandChannel(CommandChannel.DYNAMIC_MESSAGING));
+		new PublishTwitterUsersStage(gm, topic, a, tweets, runtime.newCommandChannel(GreenCommandChannel.DYNAMIC_MESSAGING));
 		
 	}
 	
@@ -107,7 +107,7 @@ public class TwitterGraphBuilder {
 		
 	}	
 	
-	public static Pipe<TwitterEventSchema>  bookSellers(GraphManager gm, Pipe<TwitterEventSchema> input) {
+	public static Pipe<TwitterEventSchema>  badWordUsers(GraphManager gm, Pipe<TwitterEventSchema> input) {
 		
 		
 		PipeConfig<TwitterEventSchema> pipeConfig = TwitterEventSchema.instance.newPipeConfig(100, 1024);		
@@ -123,7 +123,7 @@ public class TwitterGraphBuilder {
 		TextContentRouterBloom rules;
 		try {
 			rules = new TextContentRouterBloom(
-					                           new ObjectInputStream( TwitterGraphBuilder.class.getResourceAsStream("/bookWords.dat")),
+					                           new ObjectInputStream( TwitterGraphBuilder.class.getResourceAsStream("/badWords.dat")),
 					                            0,1);
 			TextContentRouterStage router = new TextContentRouterStage(gm, input, results, field, rules);
 			

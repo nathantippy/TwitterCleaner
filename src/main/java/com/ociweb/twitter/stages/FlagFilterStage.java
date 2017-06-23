@@ -7,7 +7,7 @@ import com.ociweb.pronghorn.pipe.PipeWriter;
 import com.ociweb.pronghorn.stage.PronghornStage;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 
-public class FlagFilterStage<T extends MessageSchema> extends PronghornStage {
+public class FlagFilterStage<T extends MessageSchema<T>> extends PronghornStage {
 
     //after instances of each id then let them pass
     //saves its own state

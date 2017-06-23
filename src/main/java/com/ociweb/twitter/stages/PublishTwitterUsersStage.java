@@ -1,6 +1,6 @@
 package com.ociweb.twitter.stages;
 
-import com.ociweb.gl.api.CommandChannel;
+import com.ociweb.gl.api.GreenCommandChannel;
 import com.ociweb.pronghorn.pipe.DataInputBlobReader;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeReader;
@@ -11,14 +11,14 @@ import com.ociweb.twitter.schema.TwitterEventSchema;
 
 public class PublishTwitterUsersStage extends PronghornStage {
 
-	private final CommandChannel cc;
+	private final GreenCommandChannel cc;
 	private final String topic; 
 	private final CustomerAuth a;
 	private final Pipe<TwitterEventSchema> input;
 	
-	public PublishTwitterUsersStage(GraphManager graphManager, String topicRoot, CustomerAuth a, Pipe<TwitterEventSchema> input, CommandChannel cc) {
+	public PublishTwitterUsersStage(GraphManager graphManager, String topicRoot, CustomerAuth a, Pipe<TwitterEventSchema> input, GreenCommandChannel cc) {
 		
-		super(graphManager, input, CommandChannel.getOutputPipes(cc));
+		super(graphManager, input, cc.getOutputPipes());
 		
 		this.cc = cc;
 		this.topic = topicRoot;
@@ -41,7 +41,7 @@ public class PublishTwitterUsersStage extends PronghornStage {
 		if (PipeReader.peekMsg(input, TwitterEventSchema.MSG_USERPOST_101)) {
 			//there is no undo of this open so we peek first to ensure we will be needing it.
 	
-			cc.openTopic(topic).ifPresent((writer) -> {
+			cc.publishTopic(topic, (writer) -> {
 				boolean ok = PipeReader.tryReadFragment(input);
 				assert(ok) : "we just checked this so it should not have failed";
 								
@@ -58,9 +58,7 @@ public class PublishTwitterUsersStage extends PronghornStage {
 				reader = PipeReader.inputStream(input, TwitterEventSchema.MSG_USER_100_FIELD_SCREENNAME_53);
 				writer.writeShort(reader.available());
 				writer.writeStream(reader, reader.available());				
-				
-				writer.publish();
-				
+
 				PipeReader.releaseReadLock(input);				
 				
 			});

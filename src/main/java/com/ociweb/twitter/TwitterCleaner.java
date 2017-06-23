@@ -3,7 +3,7 @@ package com.ociweb.twitter;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ociweb.gl.api.GreenRuntime;
+import com.ociweb.gl.api.MsgRuntime;
 import com.ociweb.pronghorn.util.parse.JSONStreamVisitorEnumGenerator;
 
 public class TwitterCleaner  {
@@ -57,7 +57,7 @@ public class TwitterCleaner  {
 		
 		List<CustomerAuth> users = fetchCustomersFromDB();
 		
-		GreenRuntime.run(new TwitterCleanupServerBehavior(users));
+		MsgRuntime.run(new TwitterCleanupServerBehavior(users));
 
 		
 		

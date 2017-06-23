@@ -18,7 +18,7 @@ public class OutOfOrderPipeTest {
 	public void pipeDataTest() {
 		
 		
-		Pipe<MessageSchema> pipe = TwitterEventSchema.instance.newPipe(10, 1000);
+		Pipe pipe = TwitterEventSchema.instance.newPipe(10, 1000);
 		pipe.initBuffers();
 		
 		PipeWriter.blockWriteFragment(pipe, TwitterEventSchema.MSG_USERPOST_101);
@@ -47,9 +47,9 @@ public class OutOfOrderPipeTest {
 	public void pipeDataTest2() {
 		
 		
-		Pipe<MessageSchema> pipe = TwitterEventSchema.instance.newPipe(10, 1000);
+		Pipe pipe = TwitterEventSchema.instance.newPipe(10, 1000);
 		pipe.initBuffers();
-		DataOutputBlobWriter<MessageSchema> writer = PipeWriter.outputStream(pipe);
+		DataOutputBlobWriter writer = PipeWriter.outputStream(pipe);
 
 		PipeWriter.blockWriteFragment(pipe, TwitterEventSchema.MSG_USERPOST_101);
 		//PipeWriter.tryWriteFragment(pipe, TwitterEventSchema.MSG_USERPOST_101);

@@ -88,7 +88,7 @@ public class BearerExtractor implements JSONVisitor {
   			//store this value for use
   			result.setLength(0);
 			DataInputBlobReader<RawDataSchema> localReader = Pipe.inputStream(buffer);
-			DataInputBlobReader.openLowLevelAPIField(localReader);
+			localReader.openLowLevelAPIField();
 			try {
 				localReader.readUTF(localReader, localReader.available(), result);
 			} catch (IOException e) {

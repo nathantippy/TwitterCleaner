@@ -6,7 +6,7 @@ import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeReader;
 import com.ociweb.pronghorn.pipe.PipeWriter;
 
-public class TwitterEventSchema extends MessageSchema{
+public class TwitterEventSchema extends MessageSchema<TwitterEventSchema>{
 
 	public final static FieldReferenceOffsetManager FROM = new FieldReferenceOffsetManager(
 		    new int[]{0xc040000e,0x80000000,0x90000000,0xac000000,0xac000001,0x80000001,0x80000002,0x80000003,0xac000002,0xac000003,0x80000004,0xac000004,0xac000005,0xac000006,0xc020000e,0xc0400010,0x80000000,0x90000000,0xac000000,0xac000001,0x80000001,0x80000002,0x80000003,0xac000002,0xac000003,0x80000004,0xac000004,0xac000005,0xac000006,0x90000001,0xac000007,0xc0200010},

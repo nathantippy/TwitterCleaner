@@ -1,16 +1,15 @@
 package com.ociweb.twitter.rest;
 
-import java.util.Optional;
-
-import com.ociweb.gl.api.CommandChannel;
-import com.ociweb.gl.api.GreenRuntime;
+import com.ociweb.gl.api.GreenCommandChannel;
+import com.ociweb.gl.api.MsgRuntime;
+import com.ociweb.gl.api.HTTPRequestReader;
+import com.ociweb.gl.api.MessageReader;
 import com.ociweb.gl.api.NetResponseWriter;
-import com.ociweb.gl.api.PayloadReader;
 import com.ociweb.gl.api.PubSubListener;
 import com.ociweb.gl.api.RestListener;
+import com.ociweb.gl.impl.PayloadReader;
 import com.ociweb.pronghorn.network.config.HTTPContentTypeDefaults;
 import com.ociweb.pronghorn.network.config.HTTPVerb;
-import com.ociweb.pronghorn.pipe.DataInputBlobReader;
 import com.ociweb.pronghorn.pipe.DataOutputBlobWriter;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeReader;
@@ -22,7 +21,7 @@ import com.ociweb.pronghorn.util.TopicUtil;
 
 public class SuggestionListRestModule implements RestListener, PubSubListener {
 
-	private final CommandChannel cc;
+	private final GreenCommandChannel cc;
 	private final Pipe<RawDataSchema>[] resultsBuffer;
 	
 	private final LongHashTable lookupTable;
@@ -31,9 +30,9 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 	private byte[] responseHeader = "{\"data\":[".getBytes();
 	private byte[] responseTail = "]}".getBytes();
 	
-	public SuggestionListRestModule(final GreenRuntime runtime, int maxClients) {
+	public SuggestionListRestModule(final MsgRuntime runtime, int maxClients) {
 		
-		this.cc = runtime.newCommandChannel(CommandChannel.NET_RESPONDER);
+		this.cc = runtime.newCommandChannel(GreenCommandChannel.NET_RESPONDER);
        
 		//TODO: by adding exclusive topics we can communnicated pont to point 
 		//runtime.setExclusiveTopics(cc,"myTopic","myOtherTopic");
@@ -58,7 +57,7 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 	int bodyMask = 0;
 	
 	@Override
-	public boolean restRequest(int routeId, long connectionId, long sequenceCode, HTTPVerb verb, final PayloadReader request) {
+	public boolean restRequest(HTTPRequestReader request) {
 		
 		int statusCode = 200;
 		HTTPContentTypeDefaults contentType = HTTPContentTypeDefaults.JSON;
@@ -75,9 +74,8 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 			
 		int length = responseHeader.length + responseTail.length + (bodyLen>0?(bodyLen-1):0);	
 		
-		Optional<NetResponseWriter> writer = cc.openHTTPResponse(connectionId, sequenceCode, statusCode, context, contentType, length);
-		 
-		writer.ifPresent((outputStream)->{
+		return cc.publishHTTPResponse(request.getConnectionId(), request.getSequenceCode(), statusCode, 
+				context, contentType, (outputStream)->{
 	
 			outputStream.write(responseHeader);
 			outputStream.write(bodyBacking, bodyPos, (bodyLen>0?(bodyLen-1):0), bodyMask); //skips last commas in body.			
@@ -92,7 +90,6 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 			
 		 } );
 
-		return writer.isPresent();
 	}
 
 	private void asNeededCollectNewBody(Pipe<RawDataSchema> buffer) {
@@ -135,7 +132,7 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 	}
 
 	@Override
-	public boolean message(CharSequence topic, PayloadReader payload) {
+	public boolean message(CharSequence topic, MessageReader payload) {
 
 		//0 = major topic (follow or unflollow)
 		//1 = twitter clientId long numeric
@@ -168,16 +165,24 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 			Appendables.appendValue(target, "{\"id\":", userId, "}");			
 			
 			target.append(",{\"name\":\"");
+			
 			payload.readUTF(target);
+			
 			target.append("\"}");
 			
 			target.append(",{\"screen_name\":\"");
-			payload.readUTF(target);
+
+			String name = payload.readUTF(new StringBuilder()).toString();
+			target.append(name);
+			System.err.println("new user "+name);
+		//	payload.readUTF(target);
+			
 			target.append("\"}");			
 						
 			target.append("},");//ending of object with trailing comma 
 			
 			DataOutputBlobWriter.closeHighLevelField(target, RawDataSchema.MSG_CHUNKEDSTREAM_1_FIELD_BYTEARRAY_2);
+					
 			
 			PipeWriter.publishWrites(buffer);
 		}
@@ -197,5 +202,6 @@ public class SuggestionListRestModule implements RestListener, PubSubListener {
 		}
 		
 	}
+
 
 }

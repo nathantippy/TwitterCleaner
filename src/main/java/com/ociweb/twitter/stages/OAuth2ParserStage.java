@@ -1,6 +1,6 @@
 package com.ociweb.twitter.stages;
 
-import com.ociweb.pronghorn.network.config.HTTPHeaderKeyDefaults;
+import com.ociweb.pronghorn.network.config.HTTPHeaderDefaults;
 import com.ociweb.pronghorn.network.schema.NetResponseSchema;
 import com.ociweb.pronghorn.pipe.DataInputBlobReader;
 import com.ociweb.pronghorn.pipe.Pipe;
@@ -34,7 +34,7 @@ public class OAuth2ParserStage extends PronghornStage {
 				DataInputBlobReader<NetResponseSchema> stream = PipeReader.inputStream(input,  NetResponseSchema.MSG_RESPONSE_101_FIELD_PAYLOAD_3);		
 
 				
-				System.out.println(HTTPHeaderKeyDefaults.values()[6]);
+				System.out.println(HTTPHeaderDefaults.values()[6]);
 				
 				short statusCode =stream.readShort();
 				

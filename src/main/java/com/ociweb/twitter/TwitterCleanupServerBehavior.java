@@ -4,14 +4,14 @@ import java.io.File;
 import java.util.List;
 
 import com.ociweb.gl.api.Builder;
-import com.ociweb.gl.api.GreenApp;
-import com.ociweb.gl.api.GreenRuntime;
+import com.ociweb.gl.api.MsgApp;
+import com.ociweb.gl.api.MsgRuntime;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.twitter.rest.SuggestionListRestModule;
 import com.ociweb.twitter.schema.TwitterEventSchema;
 
-public class TwitterCleanupServerBehavior implements GreenApp {
+public class TwitterCleanupServerBehavior implements MsgApp {
 
 	private int REST_ROUTE;
 	private int STATIC_FILE_ROUTE;
@@ -48,22 +48,22 @@ public class TwitterCleanupServerBehavior implements GreenApp {
 	}
 
 	@Override
-	public void declareBehavior(GreenRuntime runtime) {
+	public void declareBehavior(MsgRuntime runtime) {
 		
 		//TODO: need to span one gm to another here so we can rebuild users data. (use disk hand off just before publish after dupe removal)
 		
-		GraphManager gm = GreenRuntime.getGraphManager(runtime);
+		GraphManager gm = MsgRuntime.getGraphManager(runtime);
 		//GraphManager.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//every 20 ms
 				
 		for(CustomerAuth a: users) {
 			Pipe<TwitterEventSchema> tweets = TwitterGraphBuilder.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.secret);		
 		
 			////////Only pass along those users tweets which are about books.
-			Pipe<TwitterEventSchema> sellers = TwitterGraphBuilder.bookSellers(gm, tweets);
+			Pipe<TwitterEventSchema> sellers = TwitterGraphBuilder.badWordUsers(gm, tweets);
 			
-			///////We only pass this on as a person to block if they show up 3 times 
+			///////We only pass this on as a person to block if they show up 2 times 
 			//NOTE: a file name is passed in to remember the repeat count so we can continue of reboot
-			Pipe<TwitterEventSchema> repeaters = TwitterGraphBuilder.repeatingFieldFilter(gm, sellers, 3, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("repeaters"+a.id+".dat") );
+			Pipe<TwitterEventSchema> repeaters = TwitterGraphBuilder.repeatingFieldFilter(gm, sellers, 4, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("repeaters"+a.id+".dat") );
 			
 			//////We only pass this user on if we have never recommended that we un follow them before 
 			//NOTE: a file name is passed in here so it can save "seen" user names and continue to block duplicates after a "reboot"
@@ -79,7 +79,7 @@ public class TwitterCleanupServerBehavior implements GreenApp {
 	}
 
 	@Override
-	public void declareParallelBehavior(GreenRuntime runtime) {
+	public void declareParallelBehavior(MsgRuntime runtime) {
 
 		
 		
