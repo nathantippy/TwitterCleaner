@@ -1,9 +1,12 @@
 package com.ociweb.twitter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
-import com.ociweb.gl.api.MsgRuntime;
+import com.ociweb.pronghorn.stage.scheduling.FixedThreadsScheduler;
+import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.util.parse.JSONStreamVisitorEnumGenerator;
 
 public class TwitterCleaner  {
@@ -54,12 +57,29 @@ public class TwitterCleaner  {
 	
 	public void run() {
 	
-		
 		List<CustomerAuth> users = fetchCustomersFromDB();
+		File staticFilesPathRootIndex = new File("");
+				
+		GraphManager gm = new GraphManager();
 		
-		MsgRuntime.run(new TwitterCleanupServerBehavior(users));
-
+		TwitterCleanupServerBehavior behavior = new TwitterCleanupServerBehavior(users, staticFilesPathRootIndex);
+		behavior.buildGraph(gm);
+			 
+		boolean awesomeDebug = false;
+		if (awesomeDebug) {
+			gm.enableTelemetry(8091); 
+		}
 		
+		FixedThreadsScheduler scheduler = new FixedThreadsScheduler(gm, Runtime.getRuntime().availableProcessors());
+		
+		scheduler.startup();
+		
+		Runtime.getRuntime().addShutdownHook(new Thread() {
+		    public void run() {
+		    	scheduler.shutdown();
+		    	scheduler.awaitTermination(7, TimeUnit.SECONDS);
+		    }
+		});
 		
 	}
 

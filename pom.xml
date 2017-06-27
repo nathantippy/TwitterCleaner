@@ -13,9 +13,10 @@
     
         <dependency>
             <groupId>com.ociweb</groupId>
-            <artifactId>GreenLightning</artifactId>
-           <version>[0.0.1,0.1.0-SNAPSHOT)</version>
+            <artifactId>Pronghorn</artifactId>
+            <version>[0.0.14-SNAPSHOT,0.1.0)</version>
         </dependency>
+
 
         <dependency>
             <groupId>org.slf4j</groupId>

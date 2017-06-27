@@ -3,50 +3,35 @@ package com.ociweb.twitter;
 import java.io.File;
 import java.util.List;
 
-import com.ociweb.gl.api.Builder;
-import com.ociweb.gl.api.GreenCommandChannel;
-import com.ociweb.gl.api.MsgApp;
-import com.ociweb.gl.api.MsgRuntime;
+import com.ociweb.pronghorn.network.NetGraphBuilder;
+import com.ociweb.pronghorn.network.http.ModuleConfig;
 import com.ociweb.pronghorn.pipe.Pipe;
+import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
-import com.ociweb.twitter.rest.SuggestionListRestModule;
 import com.ociweb.twitter.schema.TwitterEventSchema;
-import com.ociweb.twitter.stages.PublishTwitterUsersStage;
 
-public class TwitterCleanupServerBehavior implements MsgApp {
+public class TwitterCleanupServerBehavior  {
 
-	private int REST_ROUTE;
-	
+	private final File staticFilesPathRootIndex;	
 	private final List<CustomerAuth> users;
+	private final boolean isTLS = false;
+	private final boolean isLarge = false;
+	private final String bindHost = "127.0.0.1";
+	private final int bindPort = 8081;
 	
-	public TwitterCleanupServerBehavior(List<CustomerAuth> users) {
+	public TwitterCleanupServerBehavior(List<CustomerAuth> users, File staticFilesPathRootIndex) {
 		this.users = users;
-	}
-	
-	@Override
-	public void declareConfiguration(Builder builder) {
-
-		boolean isTLS = true;
-		boolean isLarge = false;
-		String bindHost = "127.0.0.1";
-		int bindPort = 8081;
-		builder.enableServer(isTLS, isLarge, bindHost, bindPort);
-			
-		builder.setDefaultRate(10_000_000); //10 ms
-
-
-		REST_ROUTE = builder.registerRoute("/unfollow?user=#{userId}");
-
-		builder.enableTelemetry(true);
-
+		this.staticFilesPathRootIndex = staticFilesPathRootIndex;
 	}
 
-	@Override
-	public void declareBehavior(MsgRuntime runtime) {
+	public void buildGraph(GraphManager gm) {
+		
+		GraphManager.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 10_000_000);
 
-		GraphManager gm = MsgRuntime.getGraphManager(runtime);
-		//GraphManager.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//every 20 ms
-				
+		LongHashTable table = new LongHashTable(LongHashTable.computeBits(users.size()));
+		Pipe<TwitterEventSchema>[] unsubcriptions = new Pipe[users.size()];
+		int c = 0;
+		
 		for(CustomerAuth a: users) {
 			Pipe<TwitterEventSchema> tweets = TwitterGraphBuilder.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.secret);		
 		
@@ -61,15 +46,14 @@ public class TwitterCleanupServerBehavior implements MsgApp {
 			//NOTE: a file name is passed in here so it can save "seen" user names and continue to block duplicates after a "reboot"
 			Pipe<TwitterEventSchema> uniques = TwitterGraphBuilder.uniqueFieldFilter(gm, repeaters, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("uniques"+a.id+".dat") );
 						
-			PublishTwitterUsersStage stage = new PublishTwitterUsersStage(gm, "unfollow/"+a.id, a, uniques, 
-					runtime.newCommandChannel(GreenCommandChannel.DYNAMIC_MESSAGING));
+			//these uniques must be sent to the right rest module and added to table so they can be looked up.
+			LongHashTable.setItem(table, a.id, c);
+			unsubcriptions[c++] = uniques;
 	
-			
 		}
-			
-		int maxClients = 10;
-		runtime.addRestListener(new SuggestionListRestModule(runtime, maxClients),REST_ROUTE).addSubscription("unfollow/%u");
-		
+		NetGraphBuilder.httpServerSetup(isTLS, bindHost, bindPort, gm, isLarge,
+				                       new RestModules(this, unsubcriptions, table, staticFilesPathRootIndex));
+
 	}
 
 }
