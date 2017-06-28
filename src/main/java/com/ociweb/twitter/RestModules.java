@@ -2,6 +2,7 @@ package com.ociweb.twitter;
 
 import java.io.File;
 
+import com.ociweb.pronghorn.network.config.HTTPSpecification;
 import com.ociweb.pronghorn.network.http.HTTP1xRouterStageConfig;
 import com.ociweb.pronghorn.network.http.ModuleConfig;
 import com.ociweb.pronghorn.network.http.RouterStageConfig;
@@ -9,10 +10,11 @@ import com.ociweb.pronghorn.network.module.FileReadModuleStage;
 import com.ociweb.pronghorn.network.schema.HTTPRequestSchema;
 import com.ociweb.pronghorn.network.schema.ServerResponseSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
+import com.ociweb.pronghorn.pipe.PipeConfig;
 import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.twitter.schema.TwitterEventSchema;
-import com.ociweb.twitter.stages.UnfollowModuleStage;
+import com.ociweb.twitter.stages.ListUsersModuleStage;
 
 final class RestModules implements ModuleConfig {
 
@@ -41,29 +43,37 @@ final class RestModules implements ModuleConfig {
 							RouterStageConfig routerConfig, 
 							Pipe<HTTPRequestSchema>[] inputPipes) {
 		
-		Pipe<ServerResponseSchema>[] outputPipes = new Pipe[inputPipes.length];
-						
+		PipeConfig<ServerResponseSchema> config = ServerResponseSchema.instance.newPipeConfig(8, 1<<10);
+		
+		int i = inputPipes.length;
+		Pipe<ServerResponseSchema>[] outputPipes = new Pipe[i];
+		while (--i>=0) {
+			outputPipes[i] = new Pipe<ServerResponseSchema>(config);
+		}
+		
+		
+		
 		switch (moduleInstance) {
 			case 0:
 				//static files					
-			 	FileReadModuleStage.newInstance(graphManager, inputPipes, outputPipes,
-					                           ((HTTP1xRouterStageConfig)routerConfig).httpSpec,
-					                           staticFilesPathRootIndex);
+			    FileReadModuleStage.newInstance(graphManager, inputPipes, outputPipes,
+				   	                            routerConfig.httpSpec(), staticFilesPathRootIndex);
 				
 				routerConfig.registerRoute("/${filePath}");//no headers needed
 				break;
 			case 1:
 				//url for unfollows
-				UnfollowModuleStage.newInstance(graphManager, inputPipes, outputPipes, unsubPipes, table);
-				
-				//keep the header Id constant
-				int id = routerConfig.headerId("header".getBytes());
-				
-				routerConfig.registerRoute("/unfollow/#{twitterId}");//no headers needed
+				ListUsersModuleStage.newInstance(graphManager, inputPipes, outputPipes,
+						                        unsubPipes, table, routerConfig.httpSpec());
+		
+				routerConfig.registerRoute("/unfollow?user=#{twitterId}");//no headers needed
+				break;
 			default:
 				
 		}
 		
 		return outputPipes;
 	}
+
+
 }

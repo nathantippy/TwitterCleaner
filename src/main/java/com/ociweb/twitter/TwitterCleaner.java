@@ -7,6 +7,8 @@ import java.util.concurrent.TimeUnit;
 
 import com.ociweb.pronghorn.stage.scheduling.FixedThreadsScheduler;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
+import com.ociweb.pronghorn.stage.scheduling.StageScheduler;
+import com.ociweb.pronghorn.stage.scheduling.ThreadPerStageScheduler;
 import com.ociweb.pronghorn.util.parse.JSONStreamVisitorEnumGenerator;
 
 public class TwitterCleaner  {
@@ -65,12 +67,14 @@ public class TwitterCleaner  {
 		TwitterCleanupServerBehavior behavior = new TwitterCleanupServerBehavior(users, staticFilesPathRootIndex);
 		behavior.buildGraph(gm);
 			 
-		boolean awesomeDebug = false;
+		boolean awesomeDebug = true;//false;
 		if (awesomeDebug) {
 			gm.enableTelemetry(8091); 
 		}
 		
-		FixedThreadsScheduler scheduler = new FixedThreadsScheduler(gm, Runtime.getRuntime().availableProcessors());
+		//TODO: fix but in FixedThread scheduler.
+		//StageScheduler scheduler = new FixedThreadsScheduler(gm, Runtime.getRuntime().availableProcessors());
+		StageScheduler scheduler = new ThreadPerStageScheduler(gm);
 		
 		scheduler.startup();
 		
@@ -88,7 +92,7 @@ public class TwitterCleaner  {
 		
 		long id = 1234;//fake id, must be changed to real twitter id;
 		
-		users.add(new CustomerAuth(consumerKey,consumerSecret, token, secret, id));
+		users.add(new CustomerAuth(consumerKey, consumerSecret, token, secret, id));
 		return users;
 	}
 	

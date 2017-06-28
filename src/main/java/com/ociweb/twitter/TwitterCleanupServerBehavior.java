@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.List;
 
 import com.ociweb.pronghorn.network.NetGraphBuilder;
+import com.ociweb.pronghorn.network.ServerCoordinator;
+import com.ociweb.pronghorn.network.ServerPipesConfig;
 import com.ociweb.pronghorn.network.http.ModuleConfig;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
@@ -15,7 +17,7 @@ public class TwitterCleanupServerBehavior  {
 	private final File staticFilesPathRootIndex;	
 	private final List<CustomerAuth> users;
 	private final boolean isTLS = false;
-	private final boolean isLarge = false;
+
 	private final String bindHost = "127.0.0.1";
 	private final int bindPort = 8081;
 	
@@ -51,8 +53,12 @@ public class TwitterCleanupServerBehavior  {
 			unsubcriptions[c++] = uniques;
 	
 		}
-		NetGraphBuilder.httpServerSetup(isTLS, bindHost, bindPort, gm, isLarge,
-				                       new RestModules(this, unsubcriptions, table, staticFilesPathRootIndex));
+		
+		ServerPipesConfig serverConfig = new ServerPipesConfig(false, isTLS, 1);
+		ServerCoordinator serverCoord = new ServerCoordinator(isTLS, bindHost, bindPort, serverConfig);
+		
+		//TODO: move all common classes to Pronghorn
+		NetGraphBuilder.buildHTTPServerGraph(gm, new RestModules(this, unsubcriptions, table, staticFilesPathRootIndex), serverCoord, serverConfig);
 
 	}
 
