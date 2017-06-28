@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.ociweb.pronghorn.pipe.FieldReferenceOffsetManager;
 import com.ociweb.pronghorn.stage.scheduling.FixedThreadsScheduler;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.stage.scheduling.StageScheduler;
@@ -72,9 +73,8 @@ public class TwitterCleaner  {
 			gm.enableTelemetry(8091); 
 		}
 		
-		//TODO: fix but in FixedThread scheduler.
-		//StageScheduler scheduler = new FixedThreadsScheduler(gm, Runtime.getRuntime().availableProcessors());
-		StageScheduler scheduler = new ThreadPerStageScheduler(gm);
+		StageScheduler scheduler = new FixedThreadsScheduler(gm);
+		//StageScheduler scheduler = new ThreadPerStageScheduler(gm);
 		
 		scheduler.startup();
 		
