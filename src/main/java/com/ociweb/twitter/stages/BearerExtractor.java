@@ -1,7 +1,5 @@
 package com.ociweb.twitter.stages;
 
-import java.io.IOException;
-
 import com.ociweb.pronghorn.pipe.DataInputBlobReader;
 import com.ociweb.pronghorn.pipe.DataOutputBlobWriter;
 import com.ociweb.pronghorn.pipe.Pipe;
@@ -89,14 +87,9 @@ public class BearerExtractor implements JSONVisitor {
   			result.setLength(0);
 			DataInputBlobReader<RawDataSchema> localReader = Pipe.inputStream(buffer);
 			localReader.openLowLevelAPIField();
-			try {
-				localReader.readUTF(localReader, localReader.available(), result);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
 			
-			
+			localReader.readUTFOfLength(localReader.available(), result);
+
 			Pipe.confirmLowLevelRead(buffer, Pipe.sizeOf(RawDataSchema.instance,  RawDataSchema.MSG_CHUNKEDSTREAM_1));
 			Pipe.releaseReadLock(buffer);
 			

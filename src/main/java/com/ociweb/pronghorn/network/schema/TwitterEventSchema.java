@@ -1,4 +1,4 @@
-package com.ociweb.twitter.schema;
+package com.ociweb.pronghorn.network.schema;
 
 import com.ociweb.pronghorn.pipe.FieldReferenceOffsetManager;
 import com.ociweb.pronghorn.pipe.MessageSchema;
@@ -33,9 +33,9 @@ public class TwitterEventSchema extends MessageSchema<TwitterEventSchema>{
 	
     public static final int FLAG_POSSIBLY_SENSITIVE       = 0b00000000_00000001;
     public static final int FLAG_FAVORITED                = 0b00000000_00000010;
-  //  public static final int FLAG_RETWEET                  = 0b00000000_00000100;
+    public static final int FLAG_RETWEET                  = 0b00000000_00000100;
     public static final int FLAG_RETWEETED                = 0b00000000_00001000;
-  //  public static final int FLAG_RETWEETED_BY_ME          = 0b00000000_00010000;
+    public static final int FLAG_RETWEETED_BY_ME          = 0b00000000_00010000;
     public static final int FLAG_TRUNCATED                = 0b00000000_00100000;
     
     public static final int FLAG_USER_PROTECTED           = 0b10000000_00000000;

@@ -1,15 +1,15 @@
 package com.ociweb.twitter.example;
 
+import com.ociweb.pronghorn.network.schema.TwitterEventSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.stage.scheduling.FixedThreadsScheduler;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.stage.scheduling.StageScheduler;
 import com.ociweb.pronghorn.stage.scheduling.ThreadPerStageScheduler;
 import com.ociweb.pronghorn.stage.test.ConsoleJSONDumpStage;
-import com.ociweb.twitter.TwitterGraphBuilder;
-import com.ociweb.twitter.schema.TwitterEventSchema;
+import com.ociweb.twitter.GraphBuilderUtil;
 
-public class ExampleWatcher {
+public class ExampleUserWatcher {
 
 	
 	public static void main(String[] args) {
@@ -21,11 +21,20 @@ public class ExampleWatcher {
         String token = getOptArg("token","-t",args,null);
         String secret = getOptArg("secret","-s",args,null);
         
+        if (null==consumerKey ||
+        	null==consumerSecret ||
+        	null==token ||
+        	null==secret) {
+        	System.out.println("Required arguments missing");
+        	System.exit(-1);
+        }
+        
+        
         GraphManager gm = new GraphManager();  
         gm.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//never run more frequently than ever 20 ms
         
         
-		Pipe<TwitterEventSchema> tweets = TwitterGraphBuilder.openTwitterUserStream(gm, 
+		Pipe<TwitterEventSchema> tweets = GraphBuilderUtil.openTwitterUserStream(gm, 
 				consumerKey, consumerSecret, token, secret);		
 		
 		ConsoleJSONDumpStage dump = ConsoleJSONDumpStage.newInstance(gm, tweets);

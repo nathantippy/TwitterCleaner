@@ -1,8 +1,8 @@
-package com.ociweb.twitter.stages.json;
+package com.ociweb.pronghorn.network.twitter;
 
 import com.ociweb.pronghorn.util.TrieKeyable;
 
-public enum TwitterKey implements TrieKeyable {
+public enum TwitterKey implements TrieKeyable<TwitterKey> {
 
     ASPECT_RATIO("aspect_ratio"),
     ATTRIBUTES("attributes"),

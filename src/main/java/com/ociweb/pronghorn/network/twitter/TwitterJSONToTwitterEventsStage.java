@@ -1,17 +1,17 @@
-package com.ociweb.twitter.stages.json;
+package com.ociweb.pronghorn.network.twitter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ociweb.pronghorn.network.NetResponseJSONStage;
 import com.ociweb.pronghorn.network.schema.NetResponseSchema;
+import com.ociweb.pronghorn.network.schema.TwitterEventSchema;
+import com.ociweb.pronghorn.network.schema.TwitterStreamControlSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeWriter;
 import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.util.parse.MapJSONToPipeBuilder;
-import com.ociweb.twitter.schema.TwitterEventSchema;
-import com.ociweb.twitter.schema.TwitterStreamControlSchema;
 
 public class TwitterJSONToTwitterEventsStage extends NetResponseJSONStage<TwitterEventSchema,TwitterKey> {
 
@@ -19,9 +19,7 @@ public class TwitterJSONToTwitterEventsStage extends NetResponseJSONStage<Twitte
 	
 	public static final int MAX_TWEET_TEXT_SIZE = 1<<10; //140*6 must have 800 or so for full utf8 (do not change this constant) NO SUPPORT FOR DM...
 	private final Pipe<TwitterStreamControlSchema> control;
-	
-	//new NetResponseJSONStage(gm, TwitterKey.class, clientResponsesPipes[STREAMING_JSON_PIPE], hosePipe, customJSONMapper() );
-	
+
 	public TwitterJSONToTwitterEventsStage(GraphManager graphManager,
 			                               Pipe<NetResponseSchema> input, 
 			                               Pipe<TwitterStreamControlSchema> control,

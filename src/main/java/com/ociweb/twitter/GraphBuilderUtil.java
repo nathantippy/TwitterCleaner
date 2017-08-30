@@ -7,21 +7,22 @@ import java.io.ObjectInputStream;
 import com.ociweb.pronghorn.network.NetGraphBuilder;
 import com.ociweb.pronghorn.network.schema.ClientHTTPRequestSchema;
 import com.ociweb.pronghorn.network.schema.NetResponseSchema;
+import com.ociweb.pronghorn.network.schema.TwitterEventSchema;
+import com.ociweb.pronghorn.network.schema.TwitterStreamControlSchema;
+import com.ociweb.pronghorn.network.twitter.RequestTwitterUserStreamStage;
+import com.ociweb.pronghorn.network.twitter.TwitterJSONToTwitterEventsStage;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeConfig;
+import com.ociweb.pronghorn.stage.filter.FlagFilterStage;
 import com.ociweb.pronghorn.stage.filter.PassRepeatsFilterStage;
 import com.ociweb.pronghorn.stage.filter.PassUniquesFilterStage;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.stage.test.PipeCleanerStage;
-import com.ociweb.twitter.schema.TwitterEventSchema;
-import com.ociweb.twitter.schema.TwitterStreamControlSchema;
-import com.ociweb.twitter.stages.FlagFilterStage;
-import com.ociweb.twitter.stages.RequestTwitterUserStreamStage;
-import com.ociweb.twitter.stages.json.TwitterJSONToTwitterEventsStage;
+import com.ociweb.twitter.stages.RequestTwitterQueryStreamStage;
 import com.ociweb.twitter.stages.text.TextContentRouterBloom;
 import com.ociweb.twitter.stages.text.TextContentRouterStage;
 
-public class TwitterGraphBuilder {
+public class GraphBuilderUtil {
 	
 	public static Pipe<TwitterEventSchema> openTwitterUserStream(GraphManager gm, String consumerKey, String consumerSecret, String token, String secret) {
 		
@@ -52,15 +53,70 @@ public class TwitterGraphBuilder {
 		////////////////////////
 		
 		Pipe<TwitterStreamControlSchema> streamControlPipe = TwitterStreamControlSchema.instance.newPipe(4, 0);
-		final int PIPE_IDX = 0;
+		final int HTTP_REQUEST_RESPONSE_USER_ID = 0;
 		
 		////////////////////
 		//Stage will open the Twitter stream and reconnect it upon request
 		////////////////////		
-		new RequestTwitterUserStreamStage(gm, consumerKey, consumerSecret, token, secret, PIPE_IDX, streamControlPipe, clientRequestsPipes[0]);
+		new RequestTwitterUserStreamStage(gm, consumerKey, consumerSecret, token, secret, HTTP_REQUEST_RESPONSE_USER_ID, streamControlPipe, clientRequestsPipes[0]);
 					
 		/////////////////////
-		//Stage will parse JSON streaming from Twitter servers and convert it to a pipe contaning twitter events
+		//Stage will parse JSON streaming from Twitter servers and convert it to a pipe containing twitter events
+		/////////////////////
+		int tweetsCount = 32;
+		return TwitterJSONToTwitterEventsStage.buildStage(gm, clientResponsesPipes[HTTP_REQUEST_RESPONSE_USER_ID], streamControlPipe, clientResponsesPipes, tweetsCount);
+	
+	}
+	
+	public static Pipe<TwitterEventSchema> openTwitterQueryStream(GraphManager gm, String consumerKey, String consumerSecret, String token, String secret) {
+		
+		////////////////////////////
+		//pipes for holding all HTTPs client requests
+		///////////////////////////*            
+		int maxRequesters = 1;
+		int clientRequestsCount = 8;
+		int clientRequestSize = 1<<12;		
+		Pipe<ClientHTTPRequestSchema>[] clientRequestsPipes = Pipe.buildPipes(maxRequesters, new PipeConfig<ClientHTTPRequestSchema>(ClientHTTPRequestSchema.instance, clientRequestsCount, clientRequestSize));
+		
+		////////////////////////////
+		//pipes for holding all HTTPs responses from server
+		///////////////////////////      
+		int maxListeners =  2;
+		final int PIPE_IDX = 0;
+		final int PIPE_IDX2 = 1;
+		
+		int clientResponseCount = 32;
+		int clientResponseSize = 1<<17;
+		Pipe<NetResponseSchema>[] clientResponsesPipes = Pipe.buildPipes(maxListeners, new PipeConfig<NetResponseSchema>(NetResponseSchema.instance, clientResponseCount, clientResponseSize));
+		
+		////////////////////////////
+		//standard HTTPs client subgraph building with TLS handshake logic
+		///////////////////////////   
+		int maxPartialResponses = 1;
+		NetGraphBuilder.buildHTTPClientGraph(gm, maxPartialResponses, clientResponsesPipes, clientRequestsPipes); 
+		
+		////////////////////////
+		//twitter specific logic
+		////////////////////////
+		
+		Pipe<TwitterStreamControlSchema> streamControlPipe = TwitterStreamControlSchema.instance.newPipe(4, 0);
+		
+		////////////////////
+		//Stage will open the Twitter stream and reconnect it upon request
+		////////////////////	
+		
+		//TODO: need to reconnect value....
+		
+		
+				
+		new RequestTwitterQueryStreamStage(gm, consumerKey, consumerSecret,
+				                            PIPE_IDX, PIPE_IDX2,
+				                            streamControlPipe, 
+				                            clientResponsesPipes[PIPE_IDX2], 
+				                            clientRequestsPipes[0]);
+				
+		/////////////////////
+		//Stage will parse JSON streaming from Twitter servers and convert it to a pipe containing twitter events
 		/////////////////////
 		int tweetsCount = 32;
 		return TwitterJSONToTwitterEventsStage.buildStage(gm, clientResponsesPipes[PIPE_IDX], streamControlPipe, clientResponsesPipes, tweetsCount);
@@ -113,7 +169,7 @@ public class TwitterGraphBuilder {
 		TextContentRouterBloom rules;
 		try {
 			rules = new TextContentRouterBloom(
-					                           new ObjectInputStream( TwitterGraphBuilder.class.getResourceAsStream("/badWords.dat")),
+					                           new ObjectInputStream( GraphBuilderUtil.class.getResourceAsStream("/badWords.dat")),
 					                            0,1);
 			TextContentRouterStage router = new TextContentRouterStage(gm, input, results, field, rules);
 			

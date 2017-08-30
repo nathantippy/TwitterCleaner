@@ -1,4 +1,4 @@
-package com.ociweb.twitter.stages;
+package com.ociweb.pronghorn.network;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -34,13 +34,11 @@ public class OAuth1HeaderBuilder {
     assert(token!=null);
     assert(tokenSecret!=null);
     
-    this.secureRandom = new SecureRandom();
-    
-    
+    this.secureRandom = new SecureRandom();    
   }
 
   
-  public void addHeaders(StringBuilder builder, List<CharSequence[]> params, int port, String scheme, String upperVerb, String host, String path) {
+  public void addHeaders(Appendable builder, List<CharSequence[]> params, int port, String scheme, String upperVerb, String host, String path) {
 
 	    long timestampSecs = generateTimestamp();
 	    String nonce = generateNonce();
@@ -98,42 +96,44 @@ public class OAuth1HeaderBuilder {
 			throw new RuntimeException(e1);
 		}
 	    
-		
-		String normalized = normalizedBuilder.toString();
+		//TODO: we have many places where this can be improved using pipes...
+		byte[] utf8Bytes2 = normalizedBuilder.toString().getBytes(Charset.forName("UTF-8"));
 
+		String key = consumerSecret + "&" + tokenSecret;
+		byte[] utf8Bytes = key.getBytes(Charset.forName("UTF-8"));
+		
 	    String signature;
 	    byte[] bytes;
 	    try {
-	      String key = consumerSecret + "&" + tokenSecret;
-		  byte[] utf8Bytes = key.getBytes(Charset.forName("UTF-8"));
-		  byte[] utf8Bytes2 = normalized.getBytes(Charset.forName("UTF-8"));
-		  
 		  Mac mac = Mac.getInstance("HmacSHA1");
 		  mac.init(new SecretKeySpec(utf8Bytes, "HmacSHA1"));
 		  bytes = mac.doFinal(utf8Bytes2);
 		  
- 	      signature = Appendables.appendBase64(new StringBuilder(), bytes, 0, bytes.length, Integer.MAX_VALUE).toString();
- 	      signature = URLEncoder.encode(signature,"UTF-8");
+ 	      String temp = Appendables.appendBase64(new StringBuilder(), bytes, 0, bytes.length, Integer.MAX_VALUE).toString();
+ 	      signature = URLEncoder.encode(temp,"UTF-8");
 
 	    } catch (Exception e) {
 	    	throw new RuntimeException(e);
 	    }
 	    
-	    builder.append("Authorization").append(": ");
-	    
-	    builder.append("OAuth ");
-	    builder.append("oauth_consumer_key").append("=\"").append((consumerKey)).append("\", ");
-	    builder.append("oauth_token").append("=\"").append((token)).append("\", ");
-	    
-	    builder.append("oauth_signature").append("=\"").append((signature)).append("\", ");
-	    builder.append("oauth_signature_method").append("=\"").append(("HMAC-SHA1")).append("\", ");
-	    builder.append("oauth_timestamp").append('=');
-	    
-	    Appendables.appendValue(builder, "\"", timestampSecs, "\", ");
-	    
-	    builder.append("oauth_nonce").append("=\"").append((nonce)).append("\", ");
-	    builder.append("oauth_version").append("=\"").append("1.0").append("\"");
-  
+	    try {
+		    builder.append("Authorization").append(": ");
+		    
+		    builder.append("OAuth ");
+		    builder.append("oauth_consumer_key").append("=\"").append((consumerKey)).append("\", ");
+		    builder.append("oauth_token").append("=\"").append((token)).append("\", ");
+		    
+		    builder.append("oauth_signature").append("=\"").append((signature)).append("\", ");
+		    builder.append("oauth_signature_method").append("=\"").append(("HMAC-SHA1")).append("\", ");
+		    builder.append("oauth_timestamp").append('=');
+		    
+		    Appendables.appendValue(builder, "\"", timestampSecs, "\", ");
+		    
+		    builder.append("oauth_nonce").append("=\"").append((nonce)).append("\", ");
+		    builder.append("oauth_version").append("=\"").append("1.0").append("\"");
+	    } catch (Exception e) {
+	    	throw new RuntimeException(e);
+	    }
 	  
   }
 

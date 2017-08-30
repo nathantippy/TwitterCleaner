@@ -9,21 +9,21 @@ import com.ociweb.pronghorn.network.http.RouterStageConfig;
 import com.ociweb.pronghorn.network.module.FileReadModuleStage;
 import com.ociweb.pronghorn.network.schema.HTTPRequestSchema;
 import com.ociweb.pronghorn.network.schema.ServerResponseSchema;
+import com.ociweb.pronghorn.network.schema.TwitterEventSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeConfig;
 import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
-import com.ociweb.twitter.schema.TwitterEventSchema;
 import com.ociweb.twitter.stages.ListUsersModuleStage;
 
 final class RestModules implements ModuleConfig {
 
-	private final TwitterCleanupServerBehavior twitterCleanupServerBehavior;
+	private final GraphBuilder twitterCleanupServerBehavior;
 	private final Pipe<TwitterEventSchema>[] unsubPipes;
 	private final LongHashTable table;
 	private final File staticFilesPathRootIndex;
 
-	RestModules(TwitterCleanupServerBehavior twitterCleanupServerBehavior,
+	RestModules(GraphBuilder twitterCleanupServerBehavior,
 			    Pipe<TwitterEventSchema>[] unsubPipes, LongHashTable table, File staticFilesPathRootIndex) {
 		this.twitterCleanupServerBehavior = twitterCleanupServerBehavior;
 		this.unsubPipes = unsubPipes;

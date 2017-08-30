@@ -14,8 +14,7 @@ import com.ociweb.pronghorn.util.parse.JSONVisitor;
 public class OAuth2ParserStage extends PronghornStage {
 
 	private Pipe<NetResponseSchema> input;
-	
-	
+		
 	public OAuth2ParserStage(GraphManager graphManager, Pipe<NetResponseSchema> input) {
 		super(graphManager, input, NONE);
 		this.input = input;
@@ -30,6 +29,7 @@ public class OAuth2ParserStage extends PronghornStage {
 			if (PipeReader.getMsgIdx(input)==NetResponseSchema.MSG_RESPONSE_101) {
 				
 				long con = PipeReader.readLong(input, NetResponseSchema.MSG_RESPONSE_101_FIELD_CONNECTIONID_1);
+				int flags = PipeReader.readInt(input, NetResponseSchema.MSG_RESPONSE_101_FIELD_CONTEXTFLAGS_5);
 				
 				DataInputBlobReader<NetResponseSchema> stream = PipeReader.inputStream(input,  NetResponseSchema.MSG_RESPONSE_101_FIELD_PAYLOAD_3);		
 
@@ -82,83 +82,12 @@ public class OAuth2ParserStage extends PronghornStage {
 			}
 			
 			PipeReader.releaseReadLock(input);
-		};
-		
-		
+		}
 		
 	}
 
 	private JSONVisitor buildVisitor() {
-		
-		
 		return new BearerExtractor();
-		
-//		return new JSONVisitor() {
-//
-//			StringBuilder builder = new StringBuilder();
-//			
-//			@Override
-//			public Appendable stringValue() {
-//				return builder;
-//			}
-//
-//			@Override
-//			public void stringValueComplete() {
-//				System.err.println(builder);
-//			}
-//
-//			@Override
-//			public Appendable stringName(int fieldIndex) {
-//				return builder;
-//			}
-//
-//			@Override
-//			public void stringNameComplete() {
-//				System.err.println(builder);
-//			}
-//
-//			@Override
-//			public void arrayBegin() {
-//				System.err.println('[');
-//			}
-//
-//			@Override
-//			public void arrayEnd() {
-//				System.err.println(']');
-//			}
-//
-//			@Override
-//			public void arrayIndexBegin(int instance) {
-//				System.err.println("idx: "+instance);
-//			}
-//
-//			@Override
-//			public void numberValue(long m, byte e) {
-//				System.err.println("A number");
-//				
-//			}
-//
-//			@Override
-//			public void nullValue() {
-//				System.err.println("null");
-//			}
-//
-//			@Override
-//			public void booleanValue(boolean b) {
-//				System.err.println("boolean "+b);
-//			}
-//
-//			@Override
-//			public void objectEnd() {
-//				System.err.println("}");
-//			}
-//
-//			@Override
-//			public void objectBegin() {
-//				System.err.println("}");
-//			}
-//			
-//		};
 	}
 
 }

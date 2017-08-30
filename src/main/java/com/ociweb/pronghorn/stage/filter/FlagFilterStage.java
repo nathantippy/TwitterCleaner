@@ -1,4 +1,4 @@
-package com.ociweb.twitter.stages;
+package com.ociweb.pronghorn.stage.filter;
 
 import com.ociweb.pronghorn.pipe.MessageSchema;
 import com.ociweb.pronghorn.pipe.Pipe;

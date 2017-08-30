@@ -7,12 +7,12 @@ import com.ociweb.pronghorn.network.NetGraphBuilder;
 import com.ociweb.pronghorn.network.ServerCoordinator;
 import com.ociweb.pronghorn.network.ServerPipesConfig;
 import com.ociweb.pronghorn.network.http.ModuleConfig;
+import com.ociweb.pronghorn.network.schema.TwitterEventSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
-import com.ociweb.twitter.schema.TwitterEventSchema;
 
-public class TwitterCleanupServerBehavior  {
+public class GraphBuilder  {
 
 	private final File staticFilesPathRootIndex;	
 	private final List<CustomerAuth> users;
@@ -21,7 +21,7 @@ public class TwitterCleanupServerBehavior  {
 	private final String bindHost = "127.0.0.1";
 	private final int bindPort = 8081;
 	
-	public TwitterCleanupServerBehavior(List<CustomerAuth> users, File staticFilesPathRootIndex) {
+	public GraphBuilder(List<CustomerAuth> users, File staticFilesPathRootIndex) {
 		this.users = users;
 		this.staticFilesPathRootIndex = staticFilesPathRootIndex;
 	}
@@ -35,18 +35,18 @@ public class TwitterCleanupServerBehavior  {
 		int c = 0;
 		
 		for(CustomerAuth a: users) {
-			Pipe<TwitterEventSchema> tweets = TwitterGraphBuilder.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.secret);		
+			Pipe<TwitterEventSchema> tweets = GraphBuilderUtil.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.secret);		
 		
 			////////Only pass along those users tweets which are about books.
-			Pipe<TwitterEventSchema> sellers = TwitterGraphBuilder.badWordUsers(gm, tweets);
+			Pipe<TwitterEventSchema> sellers = tweets;//GraphBuilderUtil.badWordUsers(gm, tweets);
 			
 			///////We only pass this on as a person to block if they show up 2 times 
 			//NOTE: a file name is passed in to remember the repeat count so we can continue of reboot
-			Pipe<TwitterEventSchema> repeaters = TwitterGraphBuilder.repeatingFieldFilter(gm, sellers, 4, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("repeaters"+a.id+".dat") );
+			Pipe<TwitterEventSchema> repeaters = GraphBuilderUtil.repeatingFieldFilter(gm, sellers, 4, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("repeaters"+a.id+".dat") );
 			
 			//////We only pass this user on if we have never recommended that we un follow them before 
 			//NOTE: a file name is passed in here so it can save "seen" user names and continue to block duplicates after a "reboot"
-			Pipe<TwitterEventSchema> uniques = TwitterGraphBuilder.uniqueFieldFilter(gm, repeaters, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("uniques"+a.id+".dat") );
+			Pipe<TwitterEventSchema> uniques = GraphBuilderUtil.uniqueFieldFilter(gm, repeaters, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("uniques"+a.id+".dat") );
 						
 			//these uniques must be sent to the right rest module and added to table so they can be looked up.
 			LongHashTable.setItem(table, a.id, c);
@@ -55,7 +55,10 @@ public class TwitterCleanupServerBehavior  {
 		}
 		
 		ServerPipesConfig serverConfig = new ServerPipesConfig(false, isTLS, 1);
-		ServerCoordinator serverCoord = new ServerCoordinator(isTLS, bindHost, bindPort, serverConfig);
+		ServerCoordinator serverCoord = new ServerCoordinator(isTLS, bindHost, bindPort, 
+				                            serverConfig,"/unfollow?user=1234");
+	
+		
 		
 		//TODO: move all common classes to Pronghorn
 		NetGraphBuilder.buildHTTPServerGraph(gm, new RestModules(this, unsubcriptions, table, staticFilesPathRootIndex), serverCoord, serverConfig);

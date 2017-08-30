@@ -65,7 +65,7 @@ public class TwitterCleaner  {
 				
 		GraphManager gm = new GraphManager();
 		
-		TwitterCleanupServerBehavior behavior = new TwitterCleanupServerBehavior(users, staticFilesPathRootIndex);
+		GraphBuilder behavior = new GraphBuilder(users, staticFilesPathRootIndex);
 		behavior.buildGraph(gm);
 			 
 		boolean awesomeDebug = true;//false;

@@ -10,6 +10,7 @@ import com.ociweb.pronghorn.network.config.HTTPVerbDefaults;
 import com.ociweb.pronghorn.network.module.AbstractAppendablePayloadResponseStage;
 import com.ociweb.pronghorn.network.schema.HTTPRequestSchema;
 import com.ociweb.pronghorn.network.schema.ServerResponseSchema;
+import com.ociweb.pronghorn.network.schema.TwitterEventSchema;
 import com.ociweb.pronghorn.pipe.DataInputBlobReader;
 import com.ociweb.pronghorn.pipe.DataOutputBlobWriter;
 import com.ociweb.pronghorn.pipe.Pipe;
@@ -19,7 +20,6 @@ import com.ociweb.pronghorn.pipe.RawDataSchema;
 import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.util.Appendables;
-import com.ociweb.twitter.schema.TwitterEventSchema;
 
 public class ListUsersModuleStage<   T extends Enum<T> & HTTPContentType,
 									R extends Enum<R> & HTTPRevision,
@@ -212,6 +212,14 @@ public class ListUsersModuleStage<   T extends Enum<T> & HTTPContentType,
 			
 			DataOutputBlobWriter.closeHighLevelField(target, RawDataSchema.MSG_CHUNKEDSTREAM_1_FIELD_BYTEARRAY_2);
 					
+			//debug/////////////////////////
+			StringBuilder debug = new StringBuilder("User: ");
+			PipeReader.readUTF8(input, nameField, debug);
+			debug.append(",");
+			PipeReader.readUTF8(input, screenNameField, debug);
+			System.out.println(debug);
+			////////////////////////////////
+			
 			
 			PipeWriter.publishWrites(buffer);
 	}

@@ -12,55 +12,50 @@ import java.util.Base64;
 import javax.net.ssl.HttpsURLConnection;
 
 import com.ociweb.pronghorn.network.schema.ClientHTTPRequestSchema;
+import com.ociweb.pronghorn.pipe.DataOutputBlobWriter;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeWriter;
 import com.ociweb.pronghorn.util.Appendables;
 
 public class BearerUtil {
 
+	private static final CharSequence host = "api.twitter.com";
+	private static final CharSequence path = "/oauth2/token";
 	
-
-	private void bearerRequest(Pipe<ClientHTTPRequestSchema> pipe, String ck, String cs, int port) {
-		String bearerTokenCred = ck+':'+cs;
-		byte[] btc = bearerTokenCred.getBytes();
+	public static void bearerRequest(Pipe<ClientHTTPRequestSchema> pipe, String ck, String cs, int port, int httpRequestResponseId) {
 		
-		StringBuilder builder = new StringBuilder();
+		PipeWriter.tryWriteFragment(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101);
+		PipeWriter.writeInt(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_LISTENER_10, httpRequestResponseId);
+		PipeWriter.writeInt(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_PORT_1, port);
+		PipeWriter.writeUTF8(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_HOST_2, host);
+		PipeWriter.writeUTF8(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_PATH_3, path);
 		
-		//builder.append("Accept-Encoding: gzip\r\n");//Accept: */*\r\n");		
-		
-		builder.append("Authorization: Basic ");		
-		try {
-			Appendables.appendBase64(builder, btc, 0, btc.length, Integer.MAX_VALUE);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		builder.append("\r\nContent-Type: application/x-www-form-urlencoded;charset=UTF-8\r\n");
-		
-	
- 		//Content-Type: application/x-www-form-urlencoded;charset=UTF-8
+		//builder.append("Accept-Encoding: gzip\r\n");//Accept: */*\r\n");	
+		//
+		//Content-Type: application/x-www-form-urlencoded;charset=UTF-8
 		//Authorization: Basic <64 ENCODED bearerTokenCred>
 		//Accept-Encoding: gzip
 		//User-Agent: My Twitter App v1.0.23
 		
+		DataOutputBlobWriter<ClientHTTPRequestSchema> stream = PipeWriter.outputStream(pipe);
+		DataOutputBlobWriter.openField(stream);		
+		writeHeaders(ck, cs, stream);
+		DataOutputBlobWriter.closeHighLevelField(stream, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_HEADERS_7);
 		
-		int id = 42;
-		CharSequence host = "api.twitter.com";
-		CharSequence path = "/oauth2/token";
-		CharSequence headers = builder.toString();
-	
-		
-		PipeWriter.tryWriteFragment(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101);
-		PipeWriter.writeInt(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_LISTENER_10, id);
-		PipeWriter.writeInt(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_PORT_1, port);
-		PipeWriter.writeUTF8(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_HOST_2, host);
-		PipeWriter.writeUTF8(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_PATH_3, path);
-		PipeWriter.writeUTF8(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_HEADERS_7, headers);		
 		PipeWriter.writeUTF8(pipe, ClientHTTPRequestSchema.MSG_HTTPPOST_101_FIELD_PAYLOAD_5, "grant_type=client_credentials");		
 		PipeWriter.publishWrites(pipe);
 	}
-	
 
-	
+
+	private static void writeHeaders(String ck, String cs, DataOutputBlobWriter<ClientHTTPRequestSchema> stream) {
+		byte[] btc = (ck+':'+cs).getBytes();  //TODO: not GC free...
+		stream.append("Authorization: Basic ");
+		Appendables.appendBase64(stream, btc, 0, btc.length, Integer.MAX_VALUE);
+		stream.append("\r\nContent-Type: application/x-www-form-urlencoded;charset=UTF-8\r\n");
+	}
+
+
+
 	private static String encodeKeys(String consumerKey, String consumerSecret) {
 		try {
 			String encodedConsumerKey = URLEncoder.encode(consumerKey, "UTF-8");
