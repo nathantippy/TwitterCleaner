@@ -59,8 +59,6 @@ public class GraphBuilder  {
 				                            serverConfig,"/unfollow?user=1234");
 	
 		
-		
-		//TODO: move all common classes to Pronghorn
 		NetGraphBuilder.buildHTTPServerGraph(gm, new RestModules(this, unsubcriptions, table, staticFilesPathRootIndex), serverCoord, serverConfig);
 
 	}
