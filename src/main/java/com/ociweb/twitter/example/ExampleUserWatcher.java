@@ -7,6 +7,7 @@ import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.stage.scheduling.StageScheduler;
 import com.ociweb.pronghorn.stage.scheduling.ThreadPerStageScheduler;
 import com.ociweb.pronghorn.stage.test.ConsoleJSONDumpStage;
+import com.ociweb.pronghorn.stage.test.ConsoleSummaryStage;
 import com.ociweb.twitter.GraphBuilderUtil;
 
 public class ExampleUserWatcher {
@@ -25,8 +26,10 @@ public class ExampleUserWatcher {
         	null==consumerSecret ||
         	null==token ||
         	null==secret) {
+        	
         	System.out.println("Required arguments missing");
         	System.exit(-1);
+        	
         }
         
         
@@ -37,8 +40,9 @@ public class ExampleUserWatcher {
 		Pipe<TwitterEventSchema> tweets = GraphBuilderUtil.openTwitterUserStream(gm, 
 				consumerKey, consumerSecret, token, secret);		
 		
-		ConsoleJSONDumpStage dump = ConsoleJSONDumpStage.newInstance(gm, tweets);
-
+		//ConsoleJSONDumpStage dump = ConsoleJSONDumpStage.newInstance(gm, tweets);
+		ConsoleSummaryStage dump = ConsoleSummaryStage.newInstance(gm, tweets); 
+		
 		gm.enableTelemetry(8098);
 		
 		StageScheduler s = //new ThreadPerStageScheduler(gm);

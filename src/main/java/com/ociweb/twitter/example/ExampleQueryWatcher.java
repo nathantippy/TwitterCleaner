@@ -2,11 +2,13 @@ package com.ociweb.twitter.example;
 
 import com.ociweb.pronghorn.network.schema.TwitterEventSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
+import com.ociweb.pronghorn.stage.PronghornStage;
 import com.ociweb.pronghorn.stage.scheduling.FixedThreadsScheduler;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.stage.scheduling.StageScheduler;
 import com.ociweb.pronghorn.stage.scheduling.ThreadPerStageScheduler;
 import com.ociweb.pronghorn.stage.test.ConsoleJSONDumpStage;
+import com.ociweb.pronghorn.stage.test.ConsoleSummaryStage;
 import com.ociweb.twitter.GraphBuilderUtil;
 
 public class ExampleQueryWatcher {
@@ -24,12 +26,25 @@ public class ExampleQueryWatcher {
         GraphManager gm = new GraphManager();  
         gm.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//never run more frequently than ever 20 ms
         
-        
-		Pipe<TwitterEventSchema> tweets = GraphBuilderUtil.openTwitterQueryStream(gm, 
-														consumerKey, consumerSecret, token, secret);		
 		
-		ConsoleJSONDumpStage dump = ConsoleJSONDumpStage.newInstance(gm, tweets);
-
+		String[] queryText = new String[] {"\"java\",\"c++\""};
+		int[] queryRoutes = new int[] {0};
+        
+		Pipe<TwitterEventSchema>[] tweets = GraphBuilderUtil.openTwitterQueryStream(gm,
+				                                        queryText, queryRoutes,
+														consumerKey, consumerSecret);		
+		
+		PronghornStage dump = null;
+		
+		int i = tweets.length;
+		while (--i>=0) {
+			
+			dump = ConsoleSummaryStage.newInstance(gm, tweets[i]);
+			
+			
+			//dump = ConsoleJSONDumpStage.newInstance(gm, tweets[i]);
+		}
+		
 		gm.enableTelemetry(8098);
 		
 		StageScheduler s = //new ThreadPerStageScheduler(gm);

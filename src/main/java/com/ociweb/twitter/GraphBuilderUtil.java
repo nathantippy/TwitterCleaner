@@ -9,6 +9,7 @@ import com.ociweb.pronghorn.network.schema.ClientHTTPRequestSchema;
 import com.ociweb.pronghorn.network.schema.NetResponseSchema;
 import com.ociweb.pronghorn.network.schema.TwitterEventSchema;
 import com.ociweb.pronghorn.network.schema.TwitterStreamControlSchema;
+import com.ociweb.pronghorn.network.twitter.RequestTwitterQueryStreamStage;
 import com.ociweb.pronghorn.network.twitter.RequestTwitterUserStreamStage;
 import com.ociweb.pronghorn.network.twitter.TwitterJSONToTwitterEventsStage;
 import com.ociweb.pronghorn.pipe.Pipe;
@@ -18,7 +19,6 @@ import com.ociweb.pronghorn.stage.filter.PassRepeatsFilterStage;
 import com.ociweb.pronghorn.stage.filter.PassUniquesFilterStage;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.stage.test.PipeCleanerStage;
-import com.ociweb.twitter.stages.RequestTwitterQueryStreamStage;
 import com.ociweb.twitter.stages.text.TextContentRouterBloom;
 import com.ociweb.twitter.stages.text.TextContentRouterStage;
 
@@ -51,6 +51,7 @@ public class GraphBuilderUtil {
 		////////////////////////
 		//twitter specific logic
 		////////////////////////
+		int tweetsCount = 32;
 		
 		Pipe<TwitterStreamControlSchema> streamControlPipe = TwitterStreamControlSchema.instance.newPipe(4, 0);
 		final int HTTP_REQUEST_RESPONSE_USER_ID = 0;
@@ -63,17 +64,31 @@ public class GraphBuilderUtil {
 		/////////////////////
 		//Stage will parse JSON streaming from Twitter servers and convert it to a pipe containing twitter events
 		/////////////////////
-		int tweetsCount = 32;
-		return TwitterJSONToTwitterEventsStage.buildStage(gm, clientResponsesPipes[HTTP_REQUEST_RESPONSE_USER_ID], streamControlPipe, clientResponsesPipes, tweetsCount);
+		int bottom = 0;//bottom is 0 because response keeps all results at the root
+		return TwitterJSONToTwitterEventsStage.buildStage(gm, false, bottom, clientResponsesPipes[HTTP_REQUEST_RESPONSE_USER_ID], streamControlPipe, tweetsCount);
 	
 	}
 	
-	public static Pipe<TwitterEventSchema> openTwitterQueryStream(GraphManager gm, String consumerKey, String consumerSecret, String token, String secret) {
+	public static Pipe<TwitterEventSchema>[] openTwitterQueryStream(GraphManager gm, 
+																    String[] queryText, int[] queryRoutes,
+			                                                        String consumerKey, String consumerSecret) {
+
+
+		int maxQRoute = 0;
+		int j = queryRoutes.length;
+		while (--j>=0) {
+			maxQRoute = Math.max(maxQRoute, queryRoutes[j]);
+		}
+				
+		final int bearerPipeIdx = maxQRoute+1;
+		int maxListeners =  bearerPipeIdx+1;
+			
 		
 		////////////////////////////
 		//pipes for holding all HTTPs client requests
 		///////////////////////////*            
 		int maxRequesters = 1;
+		int requesterIdx = 0;
 		int clientRequestsCount = 8;
 		int clientRequestSize = 1<<12;		
 		Pipe<ClientHTTPRequestSchema>[] clientRequestsPipes = Pipe.buildPipes(maxRequesters, new PipeConfig<ClientHTTPRequestSchema>(ClientHTTPRequestSchema.instance, clientRequestsCount, clientRequestSize));
@@ -81,46 +96,49 @@ public class GraphBuilderUtil {
 		////////////////////////////
 		//pipes for holding all HTTPs responses from server
 		///////////////////////////      
-		int maxListeners =  2;
-		final int PIPE_IDX = 0;
-		final int PIPE_IDX2 = 1;
-		
+
 		int clientResponseCount = 32;
 		int clientResponseSize = 1<<17;
 		Pipe<NetResponseSchema>[] clientResponsesPipes = Pipe.buildPipes(maxListeners, new PipeConfig<NetResponseSchema>(NetResponseSchema.instance, clientResponseCount, clientResponseSize));
-		
+			
 		////////////////////////////
 		//standard HTTPs client subgraph building with TLS handshake logic
 		///////////////////////////   
 		int maxPartialResponses = 1;
-		NetGraphBuilder.buildHTTPClientGraph(gm, maxPartialResponses, clientResponsesPipes, clientRequestsPipes); 
+		NetGraphBuilder.buildHTTPClientGraph(gm, 
+				             maxPartialResponses, 
+				             clientResponsesPipes, clientRequestsPipes); 
 		
 		////////////////////////
 		//twitter specific logic
 		////////////////////////
 		
-		Pipe<TwitterStreamControlSchema> streamControlPipe = TwitterStreamControlSchema.instance.newPipe(4, 0);
+		final int tweetsCount = 32;
+		final int bottom = 2;//bottom is 2 because multiple responses are wrapped in an array
+		int queryGroups = maxQRoute+1;
 		
-		////////////////////
-		//Stage will open the Twitter stream and reconnect it upon request
-		////////////////////	
+		Pipe<TwitterStreamControlSchema>[] controlPipes = new Pipe[queryGroups];
+		Pipe<TwitterEventSchema>[] eventPipes = new Pipe[queryGroups];
+		int k = queryGroups;
+		while (--k>=0) {
+			//we use a different JSON parser for each group of queries.			
+			eventPipes[k] = TwitterJSONToTwitterEventsStage.buildStage(gm, true, bottom, 
+											clientResponsesPipes[k], 
+											controlPipes[k] = TwitterStreamControlSchema.instance.newPipe(4, 0), 
+											tweetsCount);
+		}
+			
+		RequestTwitterQueryStreamStage.newInstance(gm, consumerKey, consumerSecret,
+											tweetsCount, queryRoutes, queryText,
+				                            bearerPipeIdx,
+				                            //the parser detected bad bearer or end of data, reconnect
+				                            //also sends the PostIds of every post decoded
+				                            controlPipes, 
+				                            clientResponsesPipes[bearerPipeIdx], //new bearer response
+				                            clientRequestsPipes[requesterIdx]); //requests bearers and queries
+
+		return eventPipes;		
 		
-		//TODO: need to reconnect value....
-		
-		
-				
-		new RequestTwitterQueryStreamStage(gm, consumerKey, consumerSecret,
-				                            PIPE_IDX, PIPE_IDX2,
-				                            streamControlPipe, 
-				                            clientResponsesPipes[PIPE_IDX2], 
-				                            clientRequestsPipes[0]);
-				
-		/////////////////////
-		//Stage will parse JSON streaming from Twitter servers and convert it to a pipe containing twitter events
-		/////////////////////
-		int tweetsCount = 32;
-		return TwitterJSONToTwitterEventsStage.buildStage(gm, clientResponsesPipes[PIPE_IDX], streamControlPipe, clientResponsesPipes, tweetsCount);
-	
 	}
 	
 	public static Pipe<TwitterEventSchema> possiblySensistive(GraphManager gm, Pipe<TwitterEventSchema> input) {
