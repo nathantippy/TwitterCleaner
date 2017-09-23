@@ -15,13 +15,13 @@ import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 public class GraphBuilder  {
 
 	private final File staticFilesPathRootIndex;	
-	private final List<CustomerAuth> users;
+	private final List<User> users;
 	private final boolean isTLS = false;
 
 	private final String bindHost = "127.0.0.1";
 	private final int bindPort = 8081;
 	
-	public GraphBuilder(List<CustomerAuth> users, File staticFilesPathRootIndex) {
+	public GraphBuilder(List<User> users, File staticFilesPathRootIndex) {
 		this.users = users;
 		this.staticFilesPathRootIndex = staticFilesPathRootIndex;
 	}
@@ -34,7 +34,7 @@ public class GraphBuilder  {
 		Pipe<TwitterEventSchema>[] unsubcriptions = new Pipe[users.size()];
 		int c = 0;
 		
-		for(CustomerAuth a: users) {
+		for(User a: users) {
 			Pipe<TwitterEventSchema> tweets = GraphBuilderUtil.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.secret);
 
 			////////Only pass along those users tweets which are about books.
@@ -71,8 +71,8 @@ public class GraphBuilder  {
 		Pipe<TwitterEventSchema>[] subscriptions = new Pipe[users.size()];
 		int c = 0;
 
-		for(CustomerAuth a: users) {
-            Pipe<TwitterEventSchema>[] tweets = GraphBuilderUtil.openTwitterQueryStream(gm, queryText, queryRoutes, consumerKey, consumerSecret);
+		for(User a: users) {
+            Pipe<TwitterEventSchema>[] tweets = GraphBuilderUtil.openTwitterQueryStream(gm, queryText, queryRoutes, a.consumerKey, a.consumerSecret);
 
 			//these uniques must be sent to the right rest module and added to table so they can be looked up.
 			LongHashTable.setItem(table, a.id, c);

@@ -18,6 +18,10 @@ public class Database {
     private PreparedStatement preparedStatement = null;
     private ResultSet resultSet = null;
 
+    public Database(){
+
+    }
+
     public boolean testConnection(){
         //Test value
         boolean testStatus = false;

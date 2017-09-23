@@ -62,7 +62,7 @@ public class TwitterCleaner  {
 		String[] queryText = new String[] {"\"java\",\"c++\""};
 		int[] queryRoutes = new int[] {0};
 	
-		List<CustomerAuth> users = fetchCustomersFromDB();
+		List<User> users = fetchUsersFromDB();
 		File staticFilesPathRootIndex = new File("");
 				
 		GraphManager gm = new GraphManager();
@@ -70,7 +70,7 @@ public class TwitterCleaner  {
 		GraphBuilder behavior = new GraphBuilder(users, staticFilesPathRootIndex);
 		behavior.buildGraph(gm, queryText, queryRoutes, consumerKey, consumerSecret);
 			 
-		boolean awesomeDebug = true;//false;
+		boolean awesomeDebug = false;//true;
 		if (awesomeDebug) {
 			gm.enableTelemetry(8091); 
 		}
@@ -98,9 +98,9 @@ public class TwitterCleaner  {
 		return users;
 	}
 	
-
-
-
-
-	
+	private List<User> fetchUsersFromDB(){
+		Database database = new Database();
+		List<User> users = database.getUsers();
+		return users;
+	}
 }
