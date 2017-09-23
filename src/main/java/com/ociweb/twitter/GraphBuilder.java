@@ -11,6 +11,7 @@ import com.ociweb.pronghorn.network.schema.TwitterEventSchema;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
+import com.ociweb.twitter.mysql.*;
 
 public class GraphBuilder  {
 
@@ -35,7 +36,7 @@ public class GraphBuilder  {
 		int c = 0;
 		
 		for(User a: users) {
-			Pipe<TwitterEventSchema> tweets = GraphBuilderUtil.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.secret);
+			Pipe<TwitterEventSchema> tweets = GraphBuilderUtil.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.tokenSecret);
 
 			////////Only pass along those users tweets which are about books.
 			//Pipe<TwitterEventSchema> sellers = tweets;//GraphBuilderUtil.badWordUsers(gm, tweets);

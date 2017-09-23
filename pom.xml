@@ -24,6 +24,12 @@
             <version>1.7.12</version>
         </dependency>
 
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.40</version>
+        </dependency>
+
         <!-- Testing dependencies. -->
         <dependency>
             <groupId>junit</groupId>
@@ -33,6 +39,8 @@
             <scope>test</scope>
             <optional>false</optional>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
     </dependencies>
 
   <scm>

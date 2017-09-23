@@ -52,7 +52,7 @@ public class Database {
     }
 
     public List<User> getUsers(){
-        List<CustomerAuth> users = new ArrayList<User>();
+        List<User> users = new ArrayList<User>();
         //Test value
         boolean testStatus = false;
         //Setup for connecting to the database
@@ -71,9 +71,9 @@ public class Database {
             resultSet = preparedStatement.executeQuery();
             while (resultSet.next()){
                 users.add(new User(
-                        rs.getInt(1), rs.getString(2), rs.getString(3),
-                        rs.getString(4), rs.getString(5), rs.getString(6),
-                        rs.getString(7), rs.getString(8)));
+                        resultSet.getInt(1), resultSet.getString(2), resultSet.getString(3),
+                        resultSet.getString(4), resultSet.getString(5), resultSet.getString(6),
+                        resultSet.getString(7), resultSet.getString(8)));
             }
         } catch (Exception e) {
             System.out.println(e);

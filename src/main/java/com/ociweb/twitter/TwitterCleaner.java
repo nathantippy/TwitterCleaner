@@ -11,6 +11,7 @@ import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.stage.scheduling.StageScheduler;
 import com.ociweb.pronghorn.stage.scheduling.ThreadPerStageScheduler;
 import com.ociweb.pronghorn.util.parse.JSONStreamVisitorEnumGenerator;
+import com.ociweb.twitter.mysql.*;
 
 public class TwitterCleaner  {
 
