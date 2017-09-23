@@ -25,7 +25,7 @@ public class ExampleQueryWatcher {
         
         GraphManager gm = new GraphManager();  
         gm.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//never run more frequently than ever 20 ms
-        
+
 		
 		String[] queryText = new String[] {"\"java\",\"c++\""};
 		int[] queryRoutes = new int[] {0};

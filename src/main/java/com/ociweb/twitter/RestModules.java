@@ -33,7 +33,7 @@ final class RestModules implements ModuleConfig {
 
 	@Override
 	public int moduleCount() {
-		return 2;
+		return 3;
 	}
 
 	@Override
@@ -68,6 +68,9 @@ final class RestModules implements ModuleConfig {
 		
 				routerConfig.registerRoute("/unfollow?user=#{twitterId}");//no headers needed
 				break;
+			case 2:
+				ListUsersModuleStage.newInstance(graphManager, inputPipes, outputPipes, unsubPipes, table, routerConfig.httpSpec());
+				routerConfig.registerRoute("/follow?user=#{twitterId}");
 			default:
 				
 		}

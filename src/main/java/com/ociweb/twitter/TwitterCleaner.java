@@ -59,6 +59,8 @@ public class TwitterCleaner  {
 	
 	
 	public void run() {
+		String[] queryText = new String[] {"\"java\",\"c++\""};
+		int[] queryRoutes = new int[] {0};
 	
 		List<CustomerAuth> users = fetchCustomersFromDB();
 		File staticFilesPathRootIndex = new File("");
@@ -66,7 +68,7 @@ public class TwitterCleaner  {
 		GraphManager gm = new GraphManager();
 		
 		GraphBuilder behavior = new GraphBuilder(users, staticFilesPathRootIndex);
-		behavior.buildGraph(gm);
+		behavior.buildGraph(gm, queryText, queryRoutes, consumerKey, consumerSecret);
 			 
 		boolean awesomeDebug = true;//false;
 		if (awesomeDebug) {
@@ -92,7 +94,7 @@ public class TwitterCleaner  {
 		
 		long id = 1234;//fake id, must be changed to real twitter id;
 		
-		users.add(new CustomerAuth(consumerKey, consumerSecret, token, secret, id));
+		users.add(new CustomerAuth("", "", consumerKey, consumerSecret, token, secret, id));
 		return users;
 	}
 	
