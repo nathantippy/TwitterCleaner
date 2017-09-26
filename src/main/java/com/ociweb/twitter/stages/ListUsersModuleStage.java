@@ -21,7 +21,7 @@ import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.stage.scheduling.GraphManager;
 import com.ociweb.pronghorn.util.Appendables;
 
-public class ListUsersModuleStage<   T extends Enum<T> & HTTPContentType,
+public class ListUsersModuleStage<  T extends Enum<T> & HTTPContentType,
 									R extends Enum<R> & HTTPRevision,
 									V extends Enum<V> & HTTPVerb,
 									H extends Enum<H> & HTTPHeader> extends AbstractAppendablePayloadResponseStage<T,R,V,H> {

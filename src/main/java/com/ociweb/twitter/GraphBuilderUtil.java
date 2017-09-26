@@ -3,17 +3,22 @@ package com.ociweb.twitter;
 import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.util.List;
 
 import com.ociweb.pronghorn.network.NetGraphBuilder;
 import com.ociweb.pronghorn.network.schema.ClientHTTPRequestSchema;
+import com.ociweb.pronghorn.network.schema.HTTPRequestSchema;
 import com.ociweb.pronghorn.network.schema.NetResponseSchema;
+import com.ociweb.pronghorn.network.schema.ServerResponseSchema;
 import com.ociweb.pronghorn.network.schema.TwitterEventSchema;
 import com.ociweb.pronghorn.network.schema.TwitterStreamControlSchema;
+import com.ociweb.pronghorn.network.twitter.RequestTwitterFriendshipStage;
 import com.ociweb.pronghorn.network.twitter.RequestTwitterQueryStreamStage;
 import com.ociweb.pronghorn.network.twitter.RequestTwitterUserStreamStage;
 import com.ociweb.pronghorn.network.twitter.TwitterJSONToTwitterEventsStage;
 import com.ociweb.pronghorn.pipe.Pipe;
 import com.ociweb.pronghorn.pipe.PipeConfig;
+import com.ociweb.pronghorn.pipe.util.hash.LongHashTable;
 import com.ociweb.pronghorn.stage.filter.FlagFilterStage;
 import com.ociweb.pronghorn.stage.filter.PassRepeatsFilterStage;
 import com.ociweb.pronghorn.stage.filter.PassUniquesFilterStage;
@@ -24,7 +29,78 @@ import com.ociweb.twitter.stages.text.TextContentRouterStage;
 
 public class GraphBuilderUtil {
 	
-	public static Pipe<TwitterEventSchema> openTwitterUserStream(GraphManager gm, String consumerKey, String consumerSecret, String token, String secret) {
+	public static Pipe<ServerResponseSchema>[] twitterFriendshipGraph(GraphManager gm,
+			                       boolean unfollow,
+			                       List<CustomerAuth> users, 
+			                       Pipe<HTTPRequestSchema>[] fromRouter, 
+			                       PipeConfig<ServerResponseSchema> outputConfig
+								 ) {
+				
+		Pipe<ServerResponseSchema>[] outputs = Pipe.buildPipes(users.size(), outputConfig);
+		
+		int maxListeners = users.size();
+		int maxRequesters = users.size();
+		int maxPartialResponses = 1;
+		
+		
+		////////////////////////////
+		//pipes for holding all HTTPs client requests
+		///////////////////////////*            
+		int clientRequestsCount = 8;
+		int clientRequestSize = 1<<12;		
+		Pipe<ClientHTTPRequestSchema>[] clientRequestsPipes = Pipe.buildPipes(maxRequesters, new PipeConfig<ClientHTTPRequestSchema>(ClientHTTPRequestSchema.instance, clientRequestsCount, clientRequestSize));
+		
+		////////////////////////////
+		//pipes for holding all HTTPs responses from server
+		///////////////////////////      
+
+		int clientResponseCount = 32;
+		int clientResponseSize = 1<<17;
+		Pipe<NetResponseSchema>[] clientResponsesPipes = Pipe.buildPipes(maxListeners, new PipeConfig<NetResponseSchema>(NetResponseSchema.instance, clientResponseCount, clientResponseSize));
+			
+		////////////////////////////
+		//standard HTTPs client subgraph building with TLS handshake logic
+		///////////////////////////   
+		NetGraphBuilder.buildHTTPClientGraph(gm, 
+				             maxPartialResponses, 
+				             clientResponsesPipes, clientRequestsPipes);
+		
+		int i = users.size();
+		Pipe<HTTPRequestSchema>[] inputs = Pipe.buildPipes(i, fromRouter[0].config());
+		LongHashTable table = new LongHashTable(LongHashTable.computeBits(i));
+		while (--i>=0) {
+		
+			CustomerAuth user = users.get(i);
+			
+			LongHashTable.setItem(table, user.id, i);//look up pipe based on twitter id
+			
+			if (unfollow) {
+				
+				RequestTwitterFriendshipStage.newUnFollowInstance(gm, 
+						user.consumerKey, user.consumerSecret, user.token, user.consumerSecret, 
+						inputs[i], outputs[i], 
+						i, clientRequestsPipes[i], clientResponsesPipes[i]);
+				
+			} else {
+				
+				RequestTwitterFriendshipStage.newFollowInstance(gm, 
+						user.consumerKey, user.consumerSecret, user.token, user.consumerSecret, 
+						inputs[i], outputs[i], 
+						i, clientRequestsPipes[i], clientResponsesPipes[i]);
+				
+			}
+		}
+		
+		//takes user requests and routes them to specific Frienship stages based on user.
+		new ParamRouterStage(gm, table, fromRouter, inputs);
+		
+		return outputs;
+	}
+	
+	
+	public static Pipe<TwitterEventSchema> openTwitterUserStream(GraphManager gm,
+			                            String consumerKey, String consumerSecret, 
+			                            String token, String secret) {
 		
 		////////////////////////////
 		//pipes for holding all HTTPs client requests
@@ -140,6 +216,11 @@ public class GraphBuilderUtil {
 		return eventPipes;		
 		
 	}
+	
+	
+	//////////////////////////////////
+	
+	
 	
 	public static Pipe<TwitterEventSchema> possiblySensistive(GraphManager gm, Pipe<TwitterEventSchema> input) {
 		

@@ -36,12 +36,13 @@ public class ExampleUserWatcher {
         GraphManager gm = new GraphManager();  
         gm.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//never run more frequently than ever 20 ms
         
+        System.out.println("running example user watcher");
         
 		Pipe<TwitterEventSchema> tweets = GraphBuilderUtil.openTwitterUserStream(gm, 
 				consumerKey, consumerSecret, token, secret);		
 		
-		//ConsoleJSONDumpStage dump = ConsoleJSONDumpStage.newInstance(gm, tweets);
-		ConsoleSummaryStage dump = ConsoleSummaryStage.newInstance(gm, tweets); 
+		ConsoleJSONDumpStage dump = ConsoleJSONDumpStage.newInstance(gm, tweets);
+		//ConsoleSummaryStage dump = ConsoleSummaryStage.newInstance(gm, tweets); 
 		
 		gm.enableTelemetry(8098);
 		
