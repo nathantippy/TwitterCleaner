@@ -52,6 +52,8 @@ public class ParamRouterStage extends PronghornStage {
 			Pipe<HTTPRequestSchema> targetPipe = outputs[pipeIdx];
 			if (Pipe.hasRoomForWrite(targetPipe)) {
 			    
+				int msgIdx = Pipe.takeMsgIdx(sourcePipe);
+				assert(HTTPRequestSchema.MSG_RESTREQUEST_300 == msgIdx);
 				int size = Pipe.addMsgIdx(targetPipe, HTTPRequestSchema.MSG_RESTREQUEST_300);
 				
 				Pipe.addLongValue(Pipe.takeLong(sourcePipe), targetPipe); //connectionId

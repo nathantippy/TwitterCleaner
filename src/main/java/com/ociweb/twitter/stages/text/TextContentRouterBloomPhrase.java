@@ -71,7 +71,6 @@ public class TextContentRouterBloomPhrase implements TextContentRouter {
 
 	@Override
 	public int route() {
-		//System.err.println(route);
 		return route;
 	}
 
