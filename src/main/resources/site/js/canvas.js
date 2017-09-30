@@ -3,12 +3,11 @@ const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
 canvas.width = innerWidth;
-canvas.height = innerHeight * 0.5;
+canvas.height = innerHeight * 0.25;
 
 const colors = [
 	'#5CB85B',
 	'#D9534F',
-	'#F0AD4E'
 ];
 
 addEventListener('resize', () => {
@@ -29,14 +28,16 @@ function randomColor(colors) {
 
 
 // Objects
-function Particle(x, y, radius, color) {
+function Particle(x, y, radius) {
+    this.flag = 0;
 	this.x = x;
 	this.y = y;
 	this.radius = radius;
-	this.color = color;
+	this.color = colors[1];
 	this.radians = Math.random() * Math.PI * 2;
 	this.velocity = 0.05;
-	this.distanceFromCenter = randomIntFromRange(50, canvas.width);
+	this.distanceFromCenter = randomIntFromRange(0, canvas.width / 2);
+    this.distanceOriginal = this.distanceFromCenter;
 	this.lastPosition = {
 		x: x,
 		y: y
@@ -49,14 +50,24 @@ function Particle(x, y, radius, color) {
 		};
 		// Move points over time
 		this.radians += this.velocity;
-
-        if (this.distanceFromCenter != 0){
-            this.distanceFromCenter -= 1;
-            // Circular Motion
-            this.x = this.lastPosition.x + Math.cos(this.radians) * this.distanceFromCenter;
-            this.y = this.lastPosition.y + Math.sin(this.radians) * this.distanceFromCenter;
-            this.draw(lastPoint);
+        if (this.distanceFromCenter < 0){
+            this.flag = 1;
+            this.color = colors[0];
         }
+        if (this.distanceOriginal < this.distanceFromCenter){
+            this.flag = 0;
+            this.color = colors[1];
+        }
+        if (this.flag == 0){
+            this.distanceFromCenter -= 1;
+        }
+        if (this.flag == 1){
+            this.distanceFromCenter += 1;
+        }
+        // Circular Motion
+        this.x = this.lastPosition.x + Math.cos(this.radians) * this.distanceFromCenter;
+        this.y = this.lastPosition.y + Math.sin(this.radians) * this.distanceFromCenter;
+        this.draw(lastPoint);
 	};
 
 	this.draw = lastPoint => {
@@ -78,7 +89,7 @@ function init() {
 
 	for (let i = 0; i < 400; i++) {
 		const radius = (Math.random() * 2) + 1;
-		particles.push(new Particle(canvas.width / 2, canvas.height / 2, radius, randomColor(colors)));
+		particles.push(new Particle(canvas.width / 2, canvas.height / 2, radius));
 	}
 }
 
