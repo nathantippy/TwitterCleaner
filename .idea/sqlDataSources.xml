@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SqlDataSourceStorage">
+    <option name="dataSources">
+      <list>
+        <State>
+          <option name="id" value="bff76c47-954c-4c05-9ad6-26848512e89e" />
+          <option name="name" value="twitter-cleaner" />
+          <option name="urls">
+            <array>
+              <option value="file://$USER_HOME$/Downloads/twitter-cleaner.sql" />
+            </array>
+          </option>
+        </State>
+      </list>
+    </option>
+  </component>
+</project>
