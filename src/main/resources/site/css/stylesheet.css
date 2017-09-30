@@ -1,0 +1,74 @@
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #f1f1f1;
+    overflow: hidden;
+}
+
+li {
+    float: left;
+}
+
+li a {
+    font-family: "Helvetica", serif;
+    display: block;
+    color: #000;
+    text-decoration: none;
+    text-align: center;
+    padding: 14px 16px;
+}
+
+li a.active {
+    background-color: #147EC2;
+    color: white;
+}
+
+li a:hover:not(a.active) {
+    background-color: #FFAE3B;
+    color: white;
+}
+
+li#about {
+    float: right;
+}
+
+div#wrapper {
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#overlay{
+    position: absolute;
+}
+
+#overlay h1 {
+    font-family: "Helvetica", serif;
+    font-size: 50px;
+    color: white;
+}
+
+div.container {
+    margin: auto;
+    width: 50%;
+}
+
+img#ocilogo {
+    width: 64px;
+    height: 64px;
+    float: right;
+}
+
+div.footer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
+}
+
+section {
+    display: block;
+}
