@@ -56,9 +56,15 @@ div.container {
 }
 
 img#ocilogo {
-    width: 64px;
-    height: 64px;
+    width: 5%;
+    height: 5%;
     float: right;
+}
+
+img#twitterlogo{
+    width: 5%;
+    height: 5%;
+    float: left;
 }
 
 div.footer {
