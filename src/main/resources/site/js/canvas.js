@@ -3,7 +3,7 @@ const canvas = document.querySelector('canvas');
 const c = canvas.getContext('2d');
 
 canvas.width = innerWidth;
-canvas.height = innerHeight * 0.33;
+canvas.height = innerHeight * 0.25;
 
 const colors = [
 	'#00e1ff',
@@ -12,7 +12,7 @@ const colors = [
 
 addEventListener('resize', () => {
 	canvas.width = innerWidth;
-	canvas.height = innerHeight;
+	canvas.height = innerHeight * 0.25;
 	init();
 });
 

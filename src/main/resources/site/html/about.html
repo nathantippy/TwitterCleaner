@@ -5,9 +5,14 @@
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
     <link rel="stylesheet" href="../css/stylesheet.css">
-    <h1 id="title">Twitter Cleaner</h1>
 </head>
 
+<div class="wrapper">
+    <canvas></canvas>
+    <div class="overlay">
+        <h1>Twitter Cleaner</h1>
+    </div>
+</div>
 <header>
     <div class="container">
         <ul>
@@ -18,18 +23,48 @@
                 <a href="./login.html">Login</a>
             </li>
             <li id="about">
-                <a class="about" href="#">About</a>
+                <a class="active" href="#">About</a>
             </li>
         </ul>
+    </div>
+    <div class="container">
+        <h2 class="subtitle">About the Team</h2>
     </div>
 </header>
 
 <div class="container">
+    <div class="container">
+        <h3 class="about">Client</h3>
+        <img class="teamPictures" src="../resources/nathan.jpg" alt="Nathan">
+        <p class="centered">Principal Software Engineer at Object Computing</p>
+    </div>
+    <div class="left">
+        <h3 class="about">Back-end Developer</h3>
+        <img class="teamPictures" src="../resources/eric.png" alt="Eric">
+        <p class="centered">Here is some text.</p>
+    </div>
+    <div class="right">
+        <h3 class="about">Database Designer</h3>
+        <img class="teamPictures" src="../resources/henry.png" alt="Henry">
+        <p class="centered">Here is some text.</p>
+    </div>
+    <div class="left">
+        <h3 class="about">Front-end Developer</h3>
+        <img class="teamPictures" src="../resources/quinn.png" alt="Quinn">
+        <p class="centered">Here is some text.</p>
+    </div>
+    <div class="right">
+        <h3 class="about">Front-end Developer</h3>
+        <img class="teamPictures" src="../resources/zach.png" alt="Zach">
+        <p class="centered">Here is some text.</p>
+    </div>
 </div>
 
 <div class="footer">
-    <a href="https://twitter.com"><img src="../resources/Twitter_Logo_Blue.png" id="twitterlogo" alt="Twitter logo"/></a>
-    <a href="https://objectcomputing.com"><img id="ocilogo" src="../resources/OCILogo.png" alt="OCI logo"/></a>
+    <a href="https://twitter.com/TeamHashtagSIUE" target="_blank"><img src="../resources/Twitter_Logo_Blue.png" id="twitterlogo" alt="Twitter logo"/></a>
+    <a href="https://objectcomputing.com" target="_blank"><img id="ocilogo" src="../resources/OCILogo.png" alt="OCI logo"/></a>
 </div>
+
+<script src="../js/canvas.js"></script>
 
 </html>

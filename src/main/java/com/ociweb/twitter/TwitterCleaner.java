@@ -31,11 +31,11 @@ public class TwitterCleaner  {
 	public static void main(String[] args) {
 		
 		//DO NOT check in these values they must be provided for every run.
-        String consumerKey = getOptArg("consumerKey","-ck",args,null);
-        String consumerSecret = getOptArg("consumerSecret","-cs",args,null);
+        String consumerKey = getOptArg("consumerKey","-ck",args,"rnuv1kvMagTr4QldKjjU74U6Y");
+        String consumerSecret = getOptArg("consumerSecret","-cs",args,"pjTAU2YCx0TDPLuKq0Hgate0sifRmEHAToNY4CNZ0Lx70U1AnA");
         
-        String token = getOptArg("token","-t",args,null);
-        String secret = getOptArg("secret","-s",args,null);
+        String token = getOptArg("token","-t",args,"1536719148-YctcWHN6ChyzMWehnXepeCDW6o1HMzxxKrTRHsR");
+        String secret = getOptArg("secret","-s",args,"Q25xzPsxRMGXVqUzBpupY4X2gfsrGYhN4qZR0q8ekJZAg");
 
 		TwitterCleaner instance = new TwitterCleaner(consumerKey, consumerSecret, token, secret);
     	instance.run();
