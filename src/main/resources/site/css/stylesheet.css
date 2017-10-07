@@ -33,18 +33,18 @@ li#about {
     float: right;
 }
 
-div#wrapper {
+div.wrapper {
     text-align: center;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#overlay{
+.overlay{
     position: absolute;
 }
 
-#overlay h1 {
+.overlay h1 {
     font-family: "Helvetica", serif;
     font-size: 50px;
     color: white;
@@ -55,26 +55,57 @@ div.container {
     width: 50%;
 }
 
+div.left {
+    margin: auto;
+    float: left;
+    width: 50%;
+}
+
+div.right {
+    margin: auto;
+    float: right;
+    width: 50%;
+}
+
 img#ocilogo {
-    width: 5%;
-    height: 5%;
+    max-width: 3%;
+    height: auto;
     float: right;
 }
 
 img#twitterlogo{
-    width: 5%;
-    height: 5%;
+    max-width: 3%;
+    height: auto;
     float: left;
 }
 
+img.teamPictures{
+    padding: 1%;
+    max-width: 50%;
+    height: auto;
+    display: block;
+    margin: auto;
+}
+
 div.footer {
-    position: absolute;
+    position: fixed;
     right: 0;
     bottom: 0;
     left: 0;
     padding: 1rem;
 }
 
-section {
-    display: block;
+h3.about{
+    text-align: center;
+    font-family: "Helvetica", serif;
+}
+
+p.centered{
+    font-family: "Helvetica", serif;
+    text-align: center;
+}
+
+h2.subtitle{
+    font-family: "Helvetica", serif;
+    text-align: center;
 }
