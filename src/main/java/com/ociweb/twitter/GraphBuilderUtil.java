@@ -129,7 +129,7 @@ public class GraphBuilderUtil {
 		////////////////////////
 		int tweetsCount = 32;
 		
-		Pipe<TwitterStreamControlSchema> streamControlPipe = TwitterStreamControlSchema.instance.newPipe(4, 0);
+		Pipe<TwitterStreamControlSchema> streamControlPipe = TwitterStreamControlSchema.instance.newPipe(8, 0);
 		final int HTTP_REQUEST_RESPONSE_USER_ID = 0;
 		
 		////////////////////
@@ -200,7 +200,7 @@ public class GraphBuilderUtil {
 			//we use a different JSON parser for each group of queries.			
 			eventPipes[k] = TwitterJSONToTwitterEventsStage.buildStage(gm, true, bottom, 
 											clientResponsesPipes[k], 
-											controlPipes[k] = TwitterStreamControlSchema.instance.newPipe(4, 0), 
+											controlPipes[k] = TwitterStreamControlSchema.instance.newPipe(8, 0), 
 											tweetsCount);
 		}
 			

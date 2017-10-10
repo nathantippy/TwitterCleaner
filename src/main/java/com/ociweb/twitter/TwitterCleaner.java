@@ -73,9 +73,8 @@ public class TwitterCleaner  {
 			gm.enableTelemetry(8091); 
 		}
 		
-		StageScheduler scheduler = new FixedThreadsScheduler(gm);
-		//StageScheduler scheduler = new ThreadPerStageScheduler(gm);
-		
+		StageScheduler scheduler = StageScheduler.defaultScheduler(gm);
+				
 		scheduler.startup();
 		
 		Runtime.getRuntime().addShutdownHook(new Thread() {
