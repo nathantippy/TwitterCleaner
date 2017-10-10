@@ -94,10 +94,5 @@ public class TwitterCleaner  {
 		users.add(new CustomerAuth(consumerKey, consumerSecret, token, secret, id));
 		return users;
 	}
-	
 
-
-
-
-	
 }
