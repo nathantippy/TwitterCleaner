@@ -13,7 +13,7 @@ export default class TwitterAccountList extends Component {
         username={account.username}
         name={account.name}
         created={new Date(account.created)}
-        reasons={account.reasons}
+        reason={account.reason}
         isFollow={this.props.isFollow}
         handleRemove={this.props.handleRemove.bind(this, i)}
       />

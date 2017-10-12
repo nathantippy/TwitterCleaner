@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import styles from "../scss/App.module.scss";
-import TwitterAccountList from "./TwitterAccountList";
 import NavBar from "./NavBar";
-import { Container, Row, Col } from "reactstrap";
+import { Container } from "reactstrap";
 import Main from "./Main";
 
 /*async function loadTwitterAccounts() {
@@ -72,16 +71,12 @@ class App extends Component {
       <div className={styles.App}>
         <NavBar />
         <Container>
-          <Main toggle={this.toggleClick} follow={isFollow} />
-          <Row>
-            <Col md="12" sm="12">
-              <TwitterAccountList
-                accounts={this.state.accounts}
-                isFollow={this.state.isFollow}
-                handleRemove={this.handleRemove.bind(this)}
-              />
-            </Col>
-          </Row>
+          <Main
+            toggle={this.toggleClick}
+            accounts={this.state.accounts}
+            isFollow={this.state.isFollow}
+            handleRemove={this.handleRemove}
+          />
         </Container>
       </div>
     );

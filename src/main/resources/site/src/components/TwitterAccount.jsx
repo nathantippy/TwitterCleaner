@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 export default class TwitterAccount extends Component {
   render() {
-    console.log(this.props);
+    const follow = this.props.isFollow;
     const randomFlatColor = require("random-flat-colors");
     const styles = {
       slide: {
@@ -58,8 +58,12 @@ export default class TwitterAccount extends Component {
           <br />
           <span>{"Reason: " + this.props.reason}</span>
           <br />
-          <button style={styles.ghostButton}>Never Unfollow</button>
-          <button style={styles.ghostButton}>Unfollow</button>
+          <button style={styles.ghostButton}>
+            Never {follow == true ? "Follow" : "Unfollow"}
+          </button>
+          <button style={styles.ghostButton}>
+            {follow == true ? "Follow" : "Unfollow"}
+          </button>
         </div>
       </div>
     );
