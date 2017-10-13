@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.ociweb:Pronghorn:0.0.15-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ociweb/Pronghorn/0.0.15-SNAPSHOT/Pronghorn-0.0.15-20171013.170242-170.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ociweb/Pronghorn/0.0.15-SNAPSHOT/Pronghorn-0.0.15-20171013.170242-170-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/ociweb/Pronghorn/0.0.15-SNAPSHOT/Pronghorn-0.0.15-20171013.170242-170-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
