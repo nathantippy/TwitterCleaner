@@ -68,22 +68,14 @@ public class TwitterCleaner  {
 		GraphBuilder behavior = new GraphBuilder(users, staticFilesPathRootIndex);
 		behavior.buildGraph(gm);
 			 
-		boolean awesomeDebug = true;//false;
+		boolean awesomeDebug = false;
 		if (awesomeDebug) {
 			gm.enableTelemetry(8091); 
 		}
 		
-		StageScheduler scheduler = new FixedThreadsScheduler(gm);
-		//StageScheduler scheduler = new ThreadPerStageScheduler(gm);
-		
+		StageScheduler scheduler = StageScheduler.defaultScheduler(gm);
+				
 		scheduler.startup();
-		
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-		    public void run() {
-		    	scheduler.shutdown();
-		    	scheduler.awaitTermination(7, TimeUnit.SECONDS);
-		    }
-		});
 		
 	}
 
