@@ -1,8 +1,11 @@
 import React, { Component } from "react";
+import { Container } from "reactstrap";
+import { Route } from "react-router-dom";
+
 import styles from "../scss/App.module.scss";
 import NavBar from "./NavBar";
-import { Container } from "reactstrap";
 import Main from "./Main";
+import SettingsPage from "./SettingsPage";
 
 /*async function loadTwitterAccounts() {
   let res;
@@ -38,6 +41,16 @@ class App extends Component {
           name: "Quinn Vaughn",
           username: "giggity",
           reason: "Meanie"
+        },
+        {
+          name: "Quinn Vaughn",
+          username: "giggity1",
+          reason: "Meanie"
+        },
+        {
+          name: "Quinn Vaughn",
+          username: "giggity2",
+          reason: "Meanie"
         }
       ],
       isFollow: true,
@@ -66,16 +79,24 @@ class App extends Component {
     setInterval(() => loadTwitterAccounts(), 10000);
   } */
   render() {
-    const { isFollow } = this.state;
+    const { accounts, isFollow } = this.state;
     return (
       <div className={styles.App}>
         <NavBar />
         <Container>
-          <Main
-            toggle={this.toggleClick}
-            accounts={this.state.accounts}
-            isFollow={this.state.isFollow}
-            handleRemove={this.handleRemove}
+          <Route path="/settings" component={SettingsPage} />
+          <Route
+            exact
+            path="/"
+            render={props => (
+              <Main
+                {...props}
+                toggle={this.toggleClick}
+                accounts={accounts}
+                isFollow={isFollow}
+                handleRemove={this.handleRemove}
+              />
+            )}
           />
         </Container>
       </div>

@@ -59,10 +59,10 @@ export default class TwitterAccount extends Component {
           <span>{"Reason: " + this.props.reason}</span>
           <br />
           <button style={styles.ghostButton}>
-            Never {follow == true ? "Follow" : "Unfollow"}
+            Never {follow === true ? "Follow" : "Unfollow"}
           </button>
           <button style={styles.ghostButton}>
-            {follow == true ? "Follow" : "Unfollow"}
+            {follow === true ? "Follow" : "Unfollow"}
           </button>
         </div>
       </div>

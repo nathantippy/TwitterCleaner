@@ -1,0 +1,95 @@
+.container {
+  margin-top: 50px;
+}
+
+a {
+  text-decoration: none;
+  color: grey;
+  display: block;
+}
+
+.backButton {
+  padding: 20px 0px;
+  font-size: 20px;
+}
+
+.flexContainer {
+  display: flex;
+  height: 100vh;
+  width: 100%;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.height {
+  height: 33.3333vh;
+}
+
+.flexHalf {
+  flex: 50%;
+}
+
+.flexWhole {
+  flex: 100%;
+}
+
+.justifiedCenter {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+}
+
+.box {
+  composes: height justifiedCenter;
+  color: #fff;
+  font-size: 30px;
+}
+
+.halfBoxes {
+  composes: box flexHalf;
+}
+
+.fullBoxes {
+  composes: box flexWhole;
+}
+
+.region {
+  composes: halfBoxes;
+  background: #462446;
+}
+
+.unfollowRegion {
+  composes: halfBoxes;
+  background: #b05f6d;
+}
+
+.language {
+  composes: halfBoxes;
+  background: #eb6b56;
+}
+
+.unfollowLanguage {
+  composes: halfBoxes;
+  background: #ffc153;
+}
+
+.nsfw {
+  composes: halfBoxes;
+  background: #47b39d;
+}
+
+.unfollownsfw {
+  composes: halfBoxes;
+  background: #462446;
+}
+
+.nDays {
+  composes: fullBoxes;
+  background: #b05f6d;
+}
+
+.followBack {
+  composes: fullBoxes;
+  background: #eb6b56;
+}

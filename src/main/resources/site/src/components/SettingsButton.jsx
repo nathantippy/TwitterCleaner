@@ -30,10 +30,12 @@ export default class Settings extends Component {
       );
     } else {
       return (
-        <Button>
-          <Icon name="settings" size="large" />
-          Settings
-        </Button>
+        <Link to="/settings">
+          <Button>
+            <Icon name="settings" size="large" />
+            Settings
+          </Button>
+        </Link>
       );
     }
   }

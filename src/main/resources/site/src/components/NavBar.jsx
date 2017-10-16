@@ -4,7 +4,7 @@ import "../scss/NavBar.module.scss";
 class NavBar extends Component {
   render() {
     return (
-      <Navbar className="navigation">
+      <Navbar className="navigation" fixedTop={true}>
         <Navbar.Header>
           <Navbar.Brand>
             <a href="#">OCI</a>
