@@ -6,6 +6,9 @@ a {
   text-decoration: none;
   color: grey;
   display: block;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .backButton {
@@ -59,29 +62,14 @@ a {
   background: #462446;
 }
 
-.unfollowRegion {
-  composes: halfBoxes;
-  background: #b05f6d;
-}
-
 .language {
   composes: halfBoxes;
   background: #eb6b56;
 }
 
-.unfollowLanguage {
-  composes: halfBoxes;
-  background: #ffc153;
-}
-
 .nsfw {
   composes: halfBoxes;
   background: #47b39d;
-}
-
-.unfollownsfw {
-  composes: halfBoxes;
-  background: #462446;
 }
 
 .nDays {

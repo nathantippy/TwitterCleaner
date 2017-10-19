@@ -1,9 +1,10 @@
 import React, { Component } from "react";
-import CSSTransition from "react-transition-group/CSSTransition";
-import { Scrollbars } from "react-custom-scrollbars";
+import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 import TwitterAccount from "./TwitterAccount";
 import styles from "../scss/TwitterAccountList.module.scss";
+
+import "../scss/TwitterAccountList.module.scss";
 
 export default class TwitterAccountList extends Component {
   render() {
