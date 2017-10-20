@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { Navbar, NavItem, Nav } from "react-bootstrap";
-import "../scss/NavBar.module.scss";
+import "../scss/NavBar.scss";
 class NavBar extends Component {
   render() {
     return (
       <Navbar className="navigation" fixedTop={true}>
         <Navbar.Header>
           <Navbar.Brand>
-            <a href="#">OCI</a>
+            <img src="OCILogo.png" />
           </Navbar.Brand>
           <Navbar.Toggle />
         </Navbar.Header>

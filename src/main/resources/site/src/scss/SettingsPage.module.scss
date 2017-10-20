@@ -13,7 +13,8 @@ a {
 label {
   display: block;
   font-weight: 400;
-  font-size: 18px;
+  font-size: 25px;
+  line-height: 25px;
 }
 .backButton {
   padding: 20px 0px;
@@ -76,13 +77,18 @@ label {
 }
 
 .close {
-  background-color: grey;
+  background-color: #3cf;
   color: white;
-  padding: 10px;
+  padding: 10px 20px;
   border-radius: 2px;
   border: 0;
 }
 
 .modalHeader {
-  border-bottom: 1px grey solid;
+  border-bottom: 1px #046b99 solid;
+}
+
+input[type="checkbox"] {
+  width: 25px;
+  height: 25px;
 }

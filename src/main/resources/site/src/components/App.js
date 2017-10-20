@@ -82,8 +82,8 @@ class App extends Component {
     const { accounts, isFollow } = this.state;
     return (
       <div className={styles.App}>
-        <NavBar />
         <Container>
+          <NavBar />
           <Route path="/settings" component={SettingsPage} />
           <Route
             exact
