@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { Button, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
 
+import styles from "../scss/SettingsButton.module.scss";
+
 export default class Settings extends Component {
   state = {
     width: window.innerWidth
@@ -25,14 +27,14 @@ export default class Settings extends Component {
     if (isMobile) {
       return (
         <Link to="/settings">
-          <Icon name="settings" size="large" />
+          <Icon name="settings" size="large" className={styles.settingsIcon} />
         </Link>
       );
     } else {
       return (
         <Link to="/settings">
-          <Button>
-            <Icon name="settings" size="large" />
+          <Button className={styles.iconButton}>
+            <Icon name="settings" size="large" className={styles.bigIcon} />
             Settings
           </Button>
         </Link>

@@ -10,10 +10,16 @@ a {
     cursor: pointer;
   }
 }
-
+label {
+  display: block;
+  font-weight: 400;
+  font-size: 18px;
+}
 .backButton {
   padding: 20px 0px;
   font-size: 20px;
+  color: #fff;
+  background-color: #1c304a;
 }
 
 .flexContainer {
@@ -26,10 +32,6 @@ a {
 
 .height {
   height: 33.3333vh;
-}
-
-.flexHalf {
-  flex: 50%;
 }
 
 .flexWhole {
@@ -49,35 +51,38 @@ a {
   font-size: 30px;
 }
 
-.halfBoxes {
-  composes: box flexHalf;
-}
-
 .fullBoxes {
   composes: box flexWhole;
 }
 
 .region {
-  composes: halfBoxes;
-  background: #462446;
+  composes: fullBoxes;
+  background: #3cf;
 }
 
 .language {
-  composes: halfBoxes;
-  background: #eb6b56;
+  composes: fullBoxes;
+  background: #046b99;
 }
 
 .nsfw {
-  composes: halfBoxes;
-  background: #47b39d;
+  composes: fullBoxes;
+  background: #3cf;
 }
 
-.nDays {
+.misc {
   composes: fullBoxes;
-  background: #b05f6d;
+  background: #046b99;
 }
 
-.followBack {
-  composes: fullBoxes;
-  background: #eb6b56;
+.close {
+  background-color: grey;
+  color: white;
+  padding: 10px;
+  border-radius: 2px;
+  border: 0;
+}
+
+.modalHeader {
+  border-bottom: 1px grey solid;
 }

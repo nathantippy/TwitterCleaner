@@ -1,10 +1,8 @@
 import React, { Component } from "react";
-import { TransitionGroup, CSSTransition } from "react-transition-group";
 
 import TwitterAccount from "./TwitterAccount";
-import styles from "../scss/TwitterAccountList.module.scss";
 
-import "../scss/TwitterAccountList.module.scss";
+import "../scss/TwitterAccountList.scss";
 
 export default class TwitterAccountList extends Component {
   render() {
@@ -17,6 +15,7 @@ export default class TwitterAccountList extends Component {
         reason={account.reason}
         isFollow={this.props.isFollow}
         handleRemove={this.props.handleRemove.bind(this, i)}
+        className="account"
       />
     ));
     if (this.props.isFollow === true) {
