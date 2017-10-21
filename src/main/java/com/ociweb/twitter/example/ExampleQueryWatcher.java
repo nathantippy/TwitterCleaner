@@ -27,7 +27,10 @@ public class ExampleQueryWatcher {
         gm.addDefaultNota(gm, GraphManager.SCHEDULE_RATE, 20_000_000);//never run more frequently than ever 20 ms
         
 		
-		String[] queryText = new String[] {"\"java\",\"c++\""};
+		String[] queryText = new String[] {
+				"java OR c++ OR python OR c# OR go OR html OR css OR js OR .net OR node",
+				"abstract OR object OR null OR opengl OR stack OR software OR pointer OR script OR method OR  function"
+		};
 		int[] queryRoutes = new int[] {0};
         
 		Pipe<TwitterEventSchema>[] tweets = GraphBuilderUtil.openTwitterQueryStream(gm,
