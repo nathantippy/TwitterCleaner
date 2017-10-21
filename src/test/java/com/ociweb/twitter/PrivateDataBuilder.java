@@ -39,12 +39,50 @@ public class PrivateDataBuilder {
             "Mais","uma","isto","Pouco","Muito" //portuguese
     };
 
+    static String[] politicsWords = new String[] {
+            "republican", "democrate", "gop", "left-wing", "right-wing", "trump", "poll", "bill",
+            "libertarian", "monocracy", "recession", "sjw"
+    };
+
+    static String[] sportWords = new String[] {
+            "football", "soccer", "basketball", "baseball", "archery", "climbing", "cycling", "bicycle",
+            "skibob", "unicycle", "ufc", "karate", "fishing", "golf", "hockey", "skiing", "shooting",
+            "gymnastics", "hunting", "sailing", "running", "rafting", "rowing", "kayaking", "canoeing"
+    };
+
+    static String[] crimeWords = new String[] {
+            "shooting", "drugs", "death", "dead", "bombing", "police", "suspect", "terrorism", "mass",
+            "injury", "jail", "prison", "jury", "judge", "stabbing", "shot", "officer", "kidnapping",
+            "justice", "case", "abuse", "alcohol", "bail"
+    };
+
+    static String[] healthWords = new String[] {
+            "cancer", "diet", "diabetes", "nutrition", "weight", "loss", "vitamins", "minerals", "exercise",
+            "healthy", "set", "rep", "allergy", "anxiety", "cure", "depression", "doctor", "drug", "genes",
+            "goal", "kinetic", "nurse", "pharmacy", "prevention", "strength", "stretching", "workout"
+    };
+
+    static String[] techWords = new String[] {
+            "laptop", "phone", "video", "game", "password", "image", "gif", "email", "keybaord", "mouse",
+            "media", "offline", "online", "radio", "search", "script", "geek", "facebook", "twitter", "instagram",
+            "snapchat"
+    };
+
+    static String[] programmingWords = new String[] {
+            "java", "c++", "cpp", "python", "static", "class", "programming", "ide", "compiler", "file", "editor",
+            "swift", "c#", "comments", "javascript", "html", "css", "sql", "design"
+    };
     
     public static void main(String[] args) {
         saveFilter(buildBloomFilter(bookWords, .00000000001), new File("bookWords.dat"));
         saveFilter(buildBloomFilter(spanishWords, .000000001), new File("spanishWords.dat"));
         saveFilter(buildBloomFilter(frenchWords, .000000001), new File("frenchWords.dat"));
-        
+        saveFilter(buildBloomFilter(politicsWords, .000000001), new File("politicsWords.dat"));
+        saveFilter(buildBloomFilter(sportWords, .000000001), new File("sportWords.dat"));
+        saveFilter(buildBloomFilter(crimeWords, .000000001), new File("crimeWords.dat"));
+        saveFilter(buildBloomFilter(healthWords, .000000001), new File("healthWords.dat"));
+        saveFilter(buildBloomFilter(techWords, .000000001), new File("techWords.dat"));
+        saveFilter(buildBloomFilter(programmingWords, .000000001), new File("programmingWords.dat"));
     }
 
     public static BloomFilter buildBloomFilter(String[] strings,double failure) {
