@@ -3,6 +3,7 @@ package com.ociweb.twitter;
 import java.io.File;
 import java.util.List;
 
+import com.ociweb.pronghorn.network.OAuth1RequestTokenStage;
 import com.ociweb.pronghorn.network.config.HTTPSpecification;
 import com.ociweb.pronghorn.network.http.HTTP1xRouterStageConfig;
 import com.ociweb.pronghorn.network.http.ModuleConfig;
@@ -43,7 +44,7 @@ final class RestModules implements ModuleConfig {
 
 	@Override
 	public int moduleCount() {
-		return 4;
+		return 6;
 	}
 
 	@Override
@@ -90,16 +91,29 @@ final class RestModules implements ModuleConfig {
      			routerConfig.registerRoute("/friendshipDestroy?user=#{userId}&friend=#{friendId}");//no headers needed
 			}
 				break;			
-//			case 4:
-//			{
-//				outputPipes = Pipe.buildPipes(inputPipes.length, config);
-//				new AuthStage(graphManager, inputPipes, outputPipes);
-//				
-//								
-//				//what headers?
-//				routerConfig.registerRoute("/auth${authArg}");//no headers needed
-//			}	
-//				break;
+			case 4:
+			{				
+				outputPipes = Pipe.buildPipes(inputPipes.length, config);	
+				
+				GraphBuilderUtil.oauth1FetchRequestToken(graphManager, inputPipes, outputPipes, routerConfig.httpSpec());
+				
+				routerConfig.registerRoute("/tokenRequest?consumerKey=${consumerKey}");//no headers needed
+				break;	
+			}
+			case 5:
+			{
+				
+				outputPipes = Pipe.buildPipes(inputPipes.length, config);
+								
+				GraphBuilderUtil.oauth1FetchAccessToken(graphManager, inputPipes, outputPipes, routerConfig.httpSpec());
+				
+				//The token and secret should already be known by this stage so they need not be passed in
+				//TODO:  Request token needs to redirect to here.
+				
+				routerConfig.registerRoute("/accessRequest?consumerKey=${consumerKey}&consumerSecret${consumerSecret}&token=${token}&tokenSecret=${tokenSecret}");//no headers needed
+				break;	
+			}
+			
 			
 			default:
 				

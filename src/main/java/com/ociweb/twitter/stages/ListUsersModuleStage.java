@@ -232,11 +232,11 @@ public class ListUsersModuleStage<  T extends Enum<T> & HTTPContentType,
 			DataOutputBlobWriter.closeLowLevelField(target);
 					
 //			//debug/////////////////////////
-//			StringBuilder debug = new StringBuilder("User: ");
-//			PipeReader.readUTF8(input, nameField, debug);
-//			debug.append(",");
-//			PipeReader.readUTF8(input, screenNameField, debug);
-//			System.out.println(debug);
+			StringBuilder debug = new StringBuilder("User: ");
+			PipeReader.readUTF8(input, nameField, debug);
+			debug.append(",");
+			PipeReader.readUTF8(input, screenNameField, debug);
+			System.out.println(debug);
 //			////////////////////////////////
 			
 			Pipe.confirmLowLevelWrite(buffer, Pipe.sizeOf(RawDataSchema.instance, RawDataSchema.MSG_CHUNKEDSTREAM_1));			

@@ -18,7 +18,7 @@ public class GraphBuilder  {
 
 	private final String bindHost = "127.0.0.1";
 	private final boolean isTLS = true;
-	private final int bindPort = 9443;
+	private final int bindPort = 9444;
 	
 	public GraphBuilder(List<CustomerAuth> users, File staticFilesPathRootIndex) {
 		this.users = users;
@@ -37,19 +37,19 @@ public class GraphBuilder  {
 			Pipe<TwitterEventSchema> tweets = GraphBuilderUtil.openTwitterUserStream(gm, a.consumerKey, a.consumerSecret, a.token, a.secret);		
 		
 			////////Only pass along those users tweets which are about books.
-			Pipe<TwitterEventSchema> sellers = tweets;//GraphBuilderUtil.badWordUsers(gm, tweets);
+		//	Pipe<TwitterEventSchema> sellers = tweets;//GraphBuilderUtil.badWordUsers(gm, tweets);
 			
 			///////We only pass this on as a person to block if they show up 2 times 
 			//NOTE: a file name is passed in to remember the repeat count so we can continue of reboot
-			Pipe<TwitterEventSchema> repeaters = GraphBuilderUtil.repeatingFieldFilter(gm, sellers, 4, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("repeaters"+a.id+".dat") );
+		//	Pipe<TwitterEventSchema> repeaters = GraphBuilderUtil.repeatingFieldFilter(gm, sellers, 4, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("repeaters"+a.id+".dat") );
 			
 			//////We only pass this user on if we have never recommended that we un follow them before 
 			//NOTE: a file name is passed in here so it can save "seen" user names and continue to block duplicates after a "reboot"
-			Pipe<TwitterEventSchema> uniques = GraphBuilderUtil.uniqueFieldFilter(gm, repeaters, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("uniques"+a.id+".dat") );
+		//	Pipe<TwitterEventSchema> uniques = GraphBuilderUtil.uniqueFieldFilter(gm, repeaters, TwitterEventSchema.MSG_USERPOST_101_FIELD_NAME_52, new File("uniques"+a.id+".dat") );
 						
 			//these uniques must be sent to the right rest module and added to table so they can be looked up.
 			LongHashTable.setItem(table, a.id, c);
-			unsubcriptions[c++] = uniques;
+			unsubcriptions[c++] = tweets;
 	
 		}
 		
