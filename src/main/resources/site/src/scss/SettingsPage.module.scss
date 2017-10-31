@@ -82,13 +82,18 @@ label {
   padding: 10px 20px;
   border-radius: 2px;
   border: 0;
+
+  &:hover,
+  &:active {
+    background-color: #046b99;
+  }
 }
 
 .modalHeader {
   border-bottom: 1px #046b99 solid;
 }
 
-input[type="checkbox"] {
+input[type='checkbox'] {
   width: 25px;
   height: 25px;
 }

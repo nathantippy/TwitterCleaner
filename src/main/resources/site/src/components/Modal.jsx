@@ -1,6 +1,6 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import styles from "../scss/Modal.module.scss";
+import React, { Component } from 'react';
+import PropTypes from 'prop-types';
+import styles from '../scss/Modal.module.scss';
 
 export default class Modal extends Component {
   close(e) {
@@ -12,9 +12,10 @@ export default class Modal extends Component {
   }
 
   render() {
-    const { onClose, children, isOpen } = this.props;
+    const { children, isOpen } = this.props;
     if (isOpen === false) return null;
 
+    // TODO: Have links associated with them
     return (
       <div>
         <div className={styles.modal}>{children}</div>
@@ -25,7 +26,11 @@ export default class Modal extends Component {
 }
 
 Modal.propTypes = {
-  onClose: PropTypes.func.isRequired,
+  onClose: PropTypes.func,
   children: PropTypes.node.isRequired,
   isOpen: PropTypes.bool.isRequired
+};
+
+Modal.defaultProps = {
+  isOpen: false
 };

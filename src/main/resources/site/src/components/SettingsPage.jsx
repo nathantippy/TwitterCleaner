@@ -1,20 +1,29 @@
-import React, { Component } from "react";
-import { Icon } from "semantic-ui-react";
-import { Link } from "react-router-dom";
+import React, { Component } from 'react';
+import { Icon } from 'semantic-ui-react';
+import { Link } from 'react-router-dom';
 
-import Modal from "./Modal";
-import styles from "../scss/SettingsPage.module.scss";
+import Modal from './Modal';
+import styles from '../scss/SettingsPage.module.scss';
 
 export default class SettingsPage extends Component {
   state = {
     activeModal: null,
     languages: [
-      "English",
-      "Spanish",
-      "Italian",
-      "French",
-      "Mandarin",
-      "Cantonese"
+      'English',
+      'Spanish',
+      'Italian',
+      'French',
+      'Mandarin',
+      'Cantonese',
+      'Japanese'
+    ],
+    regions: [
+      'North America',
+      'South America',
+      'Europe',
+      'Asia',
+      'Africa',
+      'Australia'
     ]
   };
 
@@ -34,29 +43,15 @@ export default class SettingsPage extends Component {
           <span>Back</span>
         </Link>
         <Modal
-          isOpen={this.state.activeModal === "region"}
+          isOpen={this.state.activeModal === 'region'}
           onClose={() => this.closeModal()}
         >
           <h1 className={styles.modalHeader}>Region Settings</h1>
-          <form>
-            <label for="usa">
-              <input type="checkbox" id="usa" value="usa" /> {" " + "USA"}
-            </label>
-          </form>
-          <button className={styles.close} onClick={() => this.closeModal()}>
-            Close
-          </button>
-        </Modal>
-        <Modal
-          isOpen={this.state.activeModal === "language"}
-          onClose={() => this.closeModal()}
-        >
-          <h1 className={styles.modalHeader}>Language Settings</h1>
           <h2>Only Follow</h2>
           <form>
-            {this.state.languages.map(language => (
-              <label for={language} className={styles.control}>
-                <input type="checkbox" id={language} /> {" " + language}
+            {this.state.regions.map(region => (
+              <label key={region} for={region} className={styles.control}>
+                <input type="checkbox" id={region} /> {' ' + region}
               </label>
             ))}
           </form>
@@ -65,7 +60,24 @@ export default class SettingsPage extends Component {
           </button>
         </Modal>
         <Modal
-          isOpen={this.state.activeModal === "nsfw"}
+          isOpen={this.state.activeModal === 'language'}
+          onClose={() => this.closeModal()}
+        >
+          <h1 className={styles.modalHeader}>Language Settings</h1>
+          <h2>Only Follow</h2>
+          <form>
+            {this.state.languages.map(language => (
+              <label key={language} for={language} className={styles.control}>
+                <input type="checkbox" id={language} /> {' ' + language}
+              </label>
+            ))}
+          </form>
+          <button className={styles.close} onClick={() => this.closeModal()}>
+            Close
+          </button>
+        </Modal>
+        <Modal
+          isOpen={this.state.activeModal === 'nsfw'}
           onClose={() => this.closeModal()}
         >
           <h1 className={styles.modalHeader}>NSFW Settings</h1>
@@ -74,7 +86,7 @@ export default class SettingsPage extends Component {
           </button>
         </Modal>
         <Modal
-          isOpen={this.state.activeModal === "misc"}
+          isOpen={this.state.activeModal === 'misc'}
           onClose={() => this.closeModal()}
         >
           <h1 className={styles.modalHeader}>Misc</h1>
@@ -83,19 +95,19 @@ export default class SettingsPage extends Component {
           </button>
         </Modal>
         <div className={styles.flexContainer}>
-          <a className={styles.region} onClick={() => this.openModal("region")}>
+          <a className={styles.region} onClick={() => this.openModal('region')}>
             <div>Region Settings</div>
           </a>
           <a
             className={styles.language}
-            onClick={() => this.openModal("language")}
+            onClick={() => this.openModal('language')}
           >
             Language Settings
           </a>
-          <a className={styles.nsfw} onClick={() => this.openModal("nsfw")}>
+          <a className={styles.nsfw} onClick={() => this.openModal('nsfw')}>
             NSFW Settings
           </a>
-          <a className={styles.misc} onClick={() => this.openModal("misc")}>
+          <a className={styles.misc} onClick={() => this.openModal('misc')}>
             Misc. Unfollows
           </a>
         </div>

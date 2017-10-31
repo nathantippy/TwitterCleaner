@@ -6,6 +6,11 @@ import java.io.ObjectInputStream;
 import java.util.List;
 
 import com.ociweb.pronghorn.network.NetGraphBuilder;
+import com.ociweb.pronghorn.network.OAuth1AccessTokenResponseStage;
+import com.ociweb.pronghorn.network.OAuth1AccessTokenStage;
+import com.ociweb.pronghorn.network.OAuth1RequestTokenResponseStage;
+import com.ociweb.pronghorn.network.OAuth1RequestTokenStage;
+import com.ociweb.pronghorn.network.config.HTTPSpecification;
 import com.ociweb.pronghorn.network.schema.ClientHTTPRequestSchema;
 import com.ociweb.pronghorn.network.schema.HTTPRequestSchema;
 import com.ociweb.pronghorn.network.schema.NetResponseSchema;
@@ -96,16 +101,24 @@ public class GraphBuilderUtil {
 		
 		return outputs;
 	}
+
+	//////////////////
+	//1 make it work
+	//2 make it better
+	/////////////////
 	
-	
-	public static Pipe<TwitterEventSchema> openTwitterUserStream(GraphManager gm,
-			                            String consumerKey, String consumerSecret, 
-			                            String token, String secret) {
+	public static void oauth1FetchRequestToken(GraphManager gm,
+			Pipe<HTTPRequestSchema>[] inputs,
+			Pipe<ServerResponseSchema>[] outputs,
+			HTTPSpecification<?, ?, ?, ?> httpSpec
+			) {
+		
+		int maxRequesters = 1;
+		int maxListeners =  1;
 		
 		////////////////////////////
 		//pipes for holding all HTTPs client requests
 		///////////////////////////*            
-		int maxRequesters = 1;
 		int clientRequestsCount = 8;
 		int clientRequestSize = 1<<12;		
 		Pipe<ClientHTTPRequestSchema>[] clientRequestsPipes = Pipe.buildPipes(maxRequesters, new PipeConfig<ClientHTTPRequestSchema>(ClientHTTPRequestSchema.instance, clientRequestsCount, clientRequestSize));
@@ -113,7 +126,6 @@ public class GraphBuilderUtil {
 		////////////////////////////
 		//pipes for holding all HTTPs responses from server
 		///////////////////////////      
-		int maxListeners =  1;
 		int clientResponseCount = 32;
 		int clientResponseSize = 1<<17;
 		Pipe<NetResponseSchema>[] clientResponsesPipes = Pipe.buildPipes(maxListeners, new PipeConfig<NetResponseSchema>(NetResponseSchema.instance, clientResponseCount, clientResponseSize));
@@ -121,28 +133,135 @@ public class GraphBuilderUtil {
 		////////////////////////////
 		//standard HTTPs client subgraph building with TLS handshake logic
 		///////////////////////////   
-		int maxPartialResponses = 1;
-		NetGraphBuilder.buildHTTPClientGraph(gm, maxPartialResponses, clientResponsesPipes, clientRequestsPipes); 
+		int maxPartialResponses = 1;      //use same clients for RequestToken etc..
+		NetGraphBuilder.buildHTTPClientGraph(gm,  //TODO: Should share common client graph.. Refactor.
+				maxPartialResponses, 
+				clientResponsesPipes, clientRequestsPipes);
 		
+		final int HTTP_REQUEST_RESPONSE = 0;
+		
+		new OAuth1RequestTokenStage(gm, inputs, 
+				          clientRequestsPipes[HTTP_REQUEST_RESPONSE], 
+				          HTTP_REQUEST_RESPONSE, 
+				          httpSpec);
+		
+		new OAuth1RequestTokenResponseStage(gm, 
+				          clientResponsesPipes[HTTP_REQUEST_RESPONSE], 
+				          outputs, 
+				          httpSpec);
+			
+	}
+	
+
+	public static void oauth1FetchAccessToken(GraphManager graphManager, 
+			Pipe<HTTPRequestSchema>[] inputPipes,
+			Pipe<ServerResponseSchema>[] outputPipes,
+			HTTPSpecification<?, ?, ?, ?> httpSpec) {
+		
+		int maxRequesters = 1;
+		int maxListeners =  1;
+		
+		////////////////////////////
+		//pipes for holding all HTTPs client requests
+		///////////////////////////*            
+		int clientRequestsCount = 8;
+		int clientRequestSize = 1<<12;		
+		Pipe<ClientHTTPRequestSchema>[] clientRequestsPipes = Pipe.buildPipes(maxRequesters, new PipeConfig<ClientHTTPRequestSchema>(ClientHTTPRequestSchema.instance, clientRequestsCount, clientRequestSize));
+		
+		////////////////////////////
+		//pipes for holding all HTTPs responses from server
+		///////////////////////////      
+		int clientResponseCount = 32;
+		int clientResponseSize = 1<<17;
+		Pipe<NetResponseSchema>[] clientResponsesPipes = Pipe.buildPipes(maxListeners, new PipeConfig<NetResponseSchema>(NetResponseSchema.instance, clientResponseCount, clientResponseSize));
+		
+		////////////////////////////
+		//standard HTTPs client subgraph building with TLS handshake logic
+		///////////////////////////   
+		int maxPartialResponses = 1;      //use same clients for RequestToken etc..
+		NetGraphBuilder.buildHTTPClientGraph(graphManager,  //TODO: Should share common client graph.. Refactor.
+				maxPartialResponses, 
+				clientResponsesPipes, clientRequestsPipes);
+		
+		final int HTTP_REQUEST_RESPONSE = 0;
+		
+		new OAuth1AccessTokenStage(graphManager, inputPipes, 
+				 clientRequestsPipes[HTTP_REQUEST_RESPONSE], 
+		          HTTP_REQUEST_RESPONSE, 
+		          httpSpec);
+		
+		new OAuth1AccessTokenResponseStage(graphManager,
+				  clientResponsesPipes[HTTP_REQUEST_RESPONSE], 
+				  outputPipes, 
+		          httpSpec);
+		
+	}
+	
+	
+	
+	
+	public static Pipe<TwitterEventSchema> openTwitterUserStream(GraphManager gm,
+			                            String consumerKey, String consumerSecret, 
+			                            String token, String secret) {
+		int maxRequesters = 1;
+		int maxListeners =  1;
+		
+		////////////////////////////
+		//pipes for holding all HTTPs client requests
+		///////////////////////////*            
+		int clientRequestsCount = 8;
+		int clientRequestSize = 1<<12;		
+		Pipe<ClientHTTPRequestSchema>[] clientRequestsPipes = Pipe.buildPipes(maxRequesters, new PipeConfig<ClientHTTPRequestSchema>(ClientHTTPRequestSchema.instance, clientRequestsCount, clientRequestSize));
+		
+		////////////////////////////
+		//pipes for holding all HTTPs responses from server
+		///////////////////////////      
+		int clientResponseCount = 32;
+		int clientResponseSize = 1<<17;
+		Pipe<NetResponseSchema>[] clientResponsesPipes = Pipe.buildPipes(maxListeners, new PipeConfig<NetResponseSchema>(NetResponseSchema.instance, clientResponseCount, clientResponseSize));
+		
+		////////////////////////////
+		//standard HTTPs client subgraph building with TLS handshake logic
+		///////////////////////////   
+		int maxPartialResponses = 1;      //use same clients for RequestToken etc..
+		NetGraphBuilder.buildHTTPClientGraph(gm,  //TODO: Should share common client graph.. Refactor.
+				maxPartialResponses, 
+				clientResponsesPipes, clientRequestsPipes);
+		
+		final int HTTP_REQUEST_RESPONSE = 0;
+		
+		
+		return buildTwitterUserStream(gm, consumerKey, consumerSecret, token, secret, 
+				                      clientRequestsPipes[HTTP_REQUEST_RESPONSE],
+									  clientResponsesPipes[HTTP_REQUEST_RESPONSE], 
+									  HTTP_REQUEST_RESPONSE);
+	
+	}
+
+	private static Pipe<TwitterEventSchema> buildTwitterUserStream(GraphManager gm, String consumerKey,
+			String consumerSecret, String token, String secret, 
+			Pipe<ClientHTTPRequestSchema> clientRequestsPipe,
+			Pipe<NetResponseSchema> clientResponsesPipe, 
+			final int responseId) {
 		////////////////////////
 		//twitter specific logic
 		////////////////////////
 		int tweetsCount = 32;
 		
 		Pipe<TwitterStreamControlSchema> streamControlPipe = TwitterStreamControlSchema.instance.newPipe(8, 0);
-		final int HTTP_REQUEST_RESPONSE_USER_ID = 0;
 		
 		////////////////////
 		//Stage will open the Twitter stream and reconnect it upon request
 		////////////////////		
-		new RequestTwitterUserStreamStage(gm, consumerKey, consumerSecret, token, secret, HTTP_REQUEST_RESPONSE_USER_ID, streamControlPipe, clientRequestsPipes[0]);
+		new RequestTwitterUserStreamStage(gm, consumerKey, consumerSecret, token, secret, 
+				                           responseId, streamControlPipe,
+				                           clientRequestsPipe);
 					
 		/////////////////////
 		//Stage will parse JSON streaming from Twitter servers and convert it to a pipe containing twitter events
 		/////////////////////
 		int bottom = 0;//bottom is 0 because response keeps all results at the root
-		return TwitterJSONToTwitterEventsStage.buildStage(gm, false, bottom, clientResponsesPipes[HTTP_REQUEST_RESPONSE_USER_ID], streamControlPipe, tweetsCount);
-	
+		return TwitterJSONToTwitterEventsStage.buildStage(gm, false, bottom, clientResponsesPipe, streamControlPipe, tweetsCount);
 	}
 	
 	public static Pipe<TwitterEventSchema>[] openTwitterQueryStream(GraphManager gm, 
@@ -280,8 +399,7 @@ public class GraphBuilderUtil {
 		
 		return results[1];
 	}
-	
-	
+
 	
 	
 	

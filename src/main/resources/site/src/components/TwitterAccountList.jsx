@@ -1,8 +1,9 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
+import { CSSTransitionGroup } from 'react-transition-group';
 
-import TwitterAccount from "./TwitterAccount";
+import TwitterAccount from './TwitterAccount';
 
-import "../scss/TwitterAccountList.scss";
+import '../scss/TwitterAccountList.scss';
 
 export default class TwitterAccountList extends Component {
   render() {
@@ -27,6 +28,16 @@ export default class TwitterAccountList extends Component {
         (a, b) => a.props.created.getTime() - b.props.created.getTime()
       );
     }
-    return <div>{accounts}</div>;
+    return (
+      <div>
+        <CSSTransitionGroup
+          transitionName="tweet"
+          transitionEnterTimeout={500}
+          transitionLeaveTimeout={300}
+        >
+          {accounts}
+        </CSSTransitionGroup>
+      </div>
+    );
   }
 }

@@ -68,7 +68,7 @@ public class TwitterCleaner  {
 		GraphBuilder behavior = new GraphBuilder(users, staticFilesPathRootIndex);
 		behavior.buildGraph(gm);
 			 
-		boolean awesomeDebug = false;
+		boolean awesomeDebug = true;
 		if (awesomeDebug) {
 			gm.enableTelemetry(8091); 
 		}
