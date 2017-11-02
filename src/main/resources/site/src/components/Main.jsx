@@ -1,11 +1,11 @@
-import React, { Component } from "react";
-import { Row, Col } from "reactstrap";
+import React, { Component } from 'react';
+import { Row, Col } from 'reactstrap';
 
-import TwitterAccountList from "./TwitterAccountList";
-import SettingsButton from "./SettingsButton";
-import Toggle from "./Toggle";
-import Options from "./Options";
-import styles from "../scss/Main.module.scss";
+import TwitterAccountList from './TwitterAccountList';
+import SettingsButton from './SettingsButton';
+import Toggle from './Toggle';
+import FilterOptions from './FilterOptions';
+import styles from '../scss/Main.module.scss';
 
 export default class Main extends Component {
   render() {
@@ -14,7 +14,7 @@ export default class Main extends Component {
         <div className={styles.container}>
           <SettingsButton />
           <Toggle {...this.props} />
-          <Options />
+          <FilterOptions />
         </div>
         <Row>
           <Col md="12" sm="12">
