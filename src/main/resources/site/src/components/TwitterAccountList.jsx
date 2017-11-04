@@ -19,6 +19,7 @@ export default class TwitterAccountList extends Component {
         className="account"
       />
     ));
+    console.log(accounts);
     if (this.props.isFollow === true) {
       accounts.sort(
         (a, b) => b.props.created.getTime() - a.props.created.getTime()

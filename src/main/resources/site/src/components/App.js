@@ -1,55 +1,16 @@
 import React, { Component } from 'react';
 import { Container } from 'reactstrap';
 import { Route } from 'react-router-dom';
+import axios from 'axios';
 
 import styles from '../scss/App.module.scss';
 import NavBar from './NavBar';
 import Main from './Main';
 import SettingsPage from './SettingsPage';
 
-/*async function loadTwitterAccounts() {
-  let res;
-  let url = "http://beta.json-generator.com/api/json/get/415RfqPRz";
-  try {
-    res = await fetch(url);
-    const twitterAccounts = await res.json();
-    this.setState({ accounts: twitterAccounts });
-  } catch (error) {}
-} */
 class App extends Component {
   state = {
-    accounts: [
-      {
-        name: 'George',
-        username: 'CarlLE3',
-        reason: 'Stinker'
-      },
-      {
-        name: 'Lenny',
-        username: 'TheRabbit',
-        reason: 'Language'
-      },
-      {
-        name: 'Ox',
-        username: 'Chamberlain',
-        reason: 'Ignoring You'
-      },
-      {
-        name: 'Quinn Vaughn',
-        username: 'giggity',
-        reason: 'Meanie'
-      },
-      {
-        name: 'Quinn Vaughn',
-        username: 'giggity1',
-        reason: 'Meanie'
-      },
-      {
-        name: 'Quinn Vaughn',
-        username: 'giggity2',
-        reason: 'Meanie'
-      }
-    ],
+    accounts: [],
     isFollow: true,
     user: {
       name: 'Dennis Bouvier',
@@ -59,8 +20,19 @@ class App extends Component {
       following: '800'
     }
   };
+  getTwitterAccounts = () => {
+    let follow;
+    if (this.state.isFollow) {
+      follow = 'follow';
+    } else {
+      follow = 'unfollow';
+    }
+    axios.get(`http://localhost:3000/${follow}`).then(res => {
+      const twitterAccounts = res.data.accounts;
+      this.setState({ accounts: twitterAccounts });
+    });
+  };
   handleRemove = i => {
-    console.log(this.state);
     let newAccounts = this.state.accounts.slice();
     newAccounts.splice(i, 1);
     this.setState({ accounts: newAccounts });
@@ -70,10 +42,16 @@ class App extends Component {
       isFollow: !this.state.isFollow
     });
   };
-  /*componentDidMount() {
-    loadTwitterAccounts();
-    setInterval(() => loadTwitterAccounts(), 10000);
-  } */
+  componentDidMount() {
+    this.getTwitterAccounts();
+    setInterval(() => this.getTwitterAccounts(), 10000);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.isFollow !== this.state.isFollow) {
+      this.getTwitterAccounts();
+    }
+  }
   render() {
     const { accounts, isFollow } = this.state;
     return (
@@ -82,7 +60,7 @@ class App extends Component {
           <NavBar />
           <Route path="/settings" component={SettingsPage} />
           <Route
-            exact
+            exact={true}
             path="/"
             render={props => (
               <Main

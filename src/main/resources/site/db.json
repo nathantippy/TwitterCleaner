@@ -1,0 +1,82 @@
+{
+  "unfollow": {
+    "accounts": [
+      {
+        "name": "George",
+        "username": "CarlLE3",
+        "reason": "Stinker",
+        "created": "2017-01-25T10:18:18Z"
+      },
+      {
+        "name": "Lenny",
+        "username": "TheRabbit",
+        "reason": "Language",
+        "created": "2017-01-25T10:18:16Z"
+      },
+      {
+        "name": "Ox",
+        "username": "Chamberlain",
+        "reason": "Ignoring You",
+        "created": "2017-01-25T10:18:23Z"
+      },
+      {
+        "name": "Quinn Vaughn",
+        "username": "giggity",
+        "reason": "Meanie",
+        "created": "2017-01-25T10:18:45Z"
+      },
+      {
+        "name": "Quinn Vaughn",
+        "username": "giggity1",
+        "reason": "Meanie",
+        "created": "2017-01-25T10:18:33Z"
+      },
+      {
+        "name": "Quinn Vaughn",
+        "username": "giggity2",
+        "reason": "Meanie",
+        "created": "2017-01-25T10:18:20Z"
+      }
+    ]
+  },
+  "follow": {
+    "accounts": [
+      {
+        "name": "Carl",
+        "username": "CarlLE3",
+        "reason": "Stinker",
+        "created": "2017-01-25T10:13:15Z"
+      },
+      {
+        "name": "Quack",
+        "username": "TheRabbit",
+        "reason": "Duck",
+        "created": "2017-01-25T10:22:10Z"
+      },
+      {
+        "name": "Hello",
+        "username": "Chamberlain",
+        "reason": "Goodbye",
+        "created": "2017-01-25T10:43:50Z"
+      },
+      {
+        "name": "Quinn Vaughn",
+        "username": "giggity",
+        "reason": "Meanie",
+        "created": "2017-01-25T10:14:23Z"
+      },
+      {
+        "name": "Quinn Vaughn",
+        "username": "giggity1",
+        "reason": "Meanie",
+        "created": "2017-01-25T10:13:18Z"
+      },
+      {
+        "name": "Quinn Vaughn",
+        "username": "giggity2",
+        "reason": "Meanie",
+        "created": "2017-01-25T10:16:18Z"
+      }
+    ]
+  }
+}

@@ -1,6 +1,8 @@
-import React, { Component } from "react";
-import Modal from "./Modal";
-import styles from "../scss/Options.module.scss";
+import React, { Component } from 'react';
+import { Button, Icon } from 'semantic-ui-react';
+
+import Modal from './Modal';
+import styles from '../scss/Options.module.scss';
 export default class Options extends Component {
   state = {
     isModal: false
@@ -18,9 +20,9 @@ export default class Options extends Component {
           Hello
           <button onClick={() => this.closeModal()}>Close</button>
         </Modal>
-        <a className={styles.options} onClick={() => this.openModal()}>
-          Options
-        </a>
+        <Button className={styles.options} onClick={() => this.openModal()}>
+          Filter Options
+        </Button>
       </div>
     );
   }
