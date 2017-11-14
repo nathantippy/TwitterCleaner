@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Button, Icon } from 'semantic-ui-react';
+import { Button } from 'semantic-ui-react';
 
 import Modal from './Modal';
 import styles from '../scss/Options.module.scss';
