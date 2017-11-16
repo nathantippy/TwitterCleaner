@@ -38,9 +38,11 @@ class App extends Component {
           follow
         }s`,
         {
-          userid: 'quinn_vaughn',
-          consumerkey: this.state.accessToken,
-          consumersecret: this.state.accessTokenSecret
+          params: {
+            userid: 'quinn_vaughn',
+            consumerkey: this.state.accessToken,
+            consumersecret: this.state.accessTokenSecret
+          }
         }
       )
       .then(res => {
