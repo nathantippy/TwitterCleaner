@@ -9,32 +9,22 @@ export default class TwitterAccountList extends Component {
   render() {
     const accounts = this.props.accounts.map((account, i) => (
       <TwitterAccount
-        key={account.username}
-        username={account.username}
-        name={account.name}
-        created={new Date(account.created)}
+        key={account.userid}
+        userid={account.userid}
+        username={account.screenname}
+        name={account.username}
         reason={account.reason}
         isFollow={this.props.isFollow}
-        handleRemove={this.props.handleRemove.bind(this, i)}
+        handleRemove={this.props.handleRemove.bind(this, account.userid)}
         className="account"
       />
     ));
-    if (this.props.isFollow === true) {
-      accounts.sort(
-        (a, b) => b.props.created.getTime() - a.props.created.getTime()
-      );
-    } else {
-      accounts.sort(
-        (a, b) => a.props.created.getTime() - b.props.created.getTime()
-      );
-    }
     return (
       <div>
         <CSSTransitionGroup
           transitionName="tweet"
           transitionEnterTimeout={500}
-          transitionLeaveTimeout={300}
-        >
+          transitionLeaveTimeout={300}>
           {accounts}
         </CSSTransitionGroup>
       </div>

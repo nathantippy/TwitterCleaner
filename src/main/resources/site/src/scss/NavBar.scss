@@ -12,7 +12,16 @@
 }
 
 .navbar-default {
-  .navbar-nav > li > a {
-    color: #3cf !important;
+  background-color: #fff !important;
+  .navbar-nav > li {
+    & > a {
+      color: #3cf !important;
+    }
   }
+}
+
+.navbar-text {
+  box-sizing: border-box;
+  margin: 0 !important;
+  padding: 15px;
 }
