@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
+import { auth } from '../config/firebase';
 import '../scss/NavBar.scss';
 class NavBar extends Component {
   render() {
@@ -12,9 +13,16 @@ class NavBar extends Component {
           <Navbar.Toggle />
         </Navbar.Header>
         <Navbar.Collapse>
-          <Nav pullRight>
-            <NavItem href="#">Log Out</NavItem>
-          </Nav>
+          {this.props.user ? (
+            <div>
+              <Nav pullRight={true} onSelect={this.props.handleUserLogout}>
+                <NavItem>Log Out</NavItem>
+              </Nav>
+              <Navbar.Text>Hello, {this.props.user.displayName}</Navbar.Text>
+            </div>
+          ) : (
+            ''
+          )}
         </Navbar.Collapse>
       </Navbar>
     );

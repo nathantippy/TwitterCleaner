@@ -6,6 +6,7 @@ import SettingsButton from './SettingsButton';
 import Toggle from './Toggle';
 import FilterOptions from './FilterOptions';
 import styles from '../scss/Main.module.scss';
+import Fetching from './FetchingData';
 
 export default class Main extends Component {
   render() {
@@ -18,11 +19,15 @@ export default class Main extends Component {
         </div>
         <Row>
           <Col md="12" sm="12">
-            <TwitterAccountList
-              accounts={this.props.accounts}
-              isFollow={this.props.isFollow}
-              handleRemove={this.props.handleRemove.bind(this)}
-            />
+            {this.props.isFetching ? (
+              <Fetching />
+            ) : (
+              <TwitterAccountList
+                accounts={this.props.accounts}
+                isFollow={this.props.isFollow}
+                handleRemove={this.props.handleRemove.bind(this)}
+              />
+            )}
           </Col>
         </Row>
       </div>
