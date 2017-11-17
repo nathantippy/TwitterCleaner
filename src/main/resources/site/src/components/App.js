@@ -10,7 +10,7 @@ import NavBar from './NavBar';
 import Main from './Main';
 import SettingsPage from './SettingsPage';
 import Login from './Login';
-import { auth } from '../config/firebase';
+import { auth } from './config/firebase';
 
 class App extends Component {
   state = {
@@ -20,34 +20,30 @@ class App extends Component {
     loaded: false,
     isFetching: true
   };
-
   getFollow = () => {
     let follow;
     if (this.state.isFollow) {
-      follow = 'Follow';
+      follow = 'follow';
     } else {
-      follow = 'Unfollow';
+      follow = 'unfollow';
     }
     return follow;
   };
+
+  getUsername = () => {
+    return localStorage.getItem('username');
+  };
   getTwitterAccounts = () => {
     const follow = this.getFollow();
+    const username = this.getUsername();
     axios
-      .post(
-        `http://twittercleaner-7476e.firebaseapp.com/api/twitter/suggest${
+      .get(
+        `https://twittercleaner-7476e.firebaseio.com/users/${username}/${
           follow
-        }s`,
-        {
-          params: {
-            userid: 'quinn_vaughn',
-            consumerkey: this.state.accessToken,
-            consumersecret: this.state.accessTokenSecret
-          }
-        }
+        }s.json`
       )
       .then(res => {
-        console.log(res);
-        //this.setState({ accounts: res, isFetching: false });
+        this.setState({ accounts: res.data, isFetching: false });
       })
       .catch(err => {
         console.log(err);
@@ -60,6 +56,7 @@ class App extends Component {
       accessToken: accessToken,
       accessTokenSecret: accessTokenSecret
     });
+    this.getTwitterAccounts();
   };
 
   handleUserLogout = () => {
@@ -67,27 +64,12 @@ class App extends Component {
       this.setState({ user: null, accessToken: '', accessTokenSecret: '' });
     });
   };
-  handleFollow = userid => {
-    axios
-      .post(
-        'https://twittercleaner-7476e.firebaseapp.com/api/user/rojowolf21/follow/',
-        {
-          consumerKey: '',
-          consumerSecret: '',
-          userID: userid
-        }
-      )
-      .then(res => {
-        console.log(res);
-      })
-      .catch(err => {
-        console.log(err);
-      });
-  };
+
   handleRemove = userid => {
     let newAccounts = this.state.accounts.slice();
     const index = newAccounts.findIndex(a => a.userid === userid);
-    console.log(index);
+    newAccounts.splice(index, 1);
+    this.setState({ accounts: newAccounts });
   };
   toggleClick = () => {
     this.setState({
@@ -97,15 +79,18 @@ class App extends Component {
   componentWillMount() {
     auth.onAuthStateChanged(user => {
       if (user) {
+        console.log(user);
         this.setState({ user, loaded: true });
       } else {
         this.setState({ loaded: true });
       }
     });
   }
+
   componentDidMount() {
-    this.getTwitterAccounts();
-    setInterval(() => this.getTwitterAccounts(), 30000);
+    if (localStorage.getItem('username') !== null) {
+      this.getTwitterAccounts();
+    }
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -118,9 +103,8 @@ class App extends Component {
 
   render() {
     const { accounts, isFollow, isFetching } = this.state;
-    console.log(this.state.user);
     if (!this.state.loaded) return <Loading />;
-    if (this.state.user === null) {
+    if (this.state.user === null || this.state.username === null) {
       return (
         <div>
           <Redirect from="/" to="/login" />
@@ -164,6 +148,7 @@ class App extends Component {
                   <Main
                     {...props}
                     toggle={this.toggleClick}
+                    isFetching={isFetching}
                     accounts={accounts}
                     isFollow={isFollow}
                     handleRemove={this.handleRemove}

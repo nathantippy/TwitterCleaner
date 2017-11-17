@@ -44,8 +44,7 @@ export default class SettingsPage extends Component {
         </Link>
         <Modal
           isOpen={this.state.activeModal === 'region'}
-          onClose={() => this.closeModal()}
-        >
+          onClose={() => this.closeModal()}>
           <h1 className={styles.modalHeader}>Region Settings</h1>
           <h2>Only Follow</h2>
           <form>
@@ -55,14 +54,16 @@ export default class SettingsPage extends Component {
               </label>
             ))}
           </form>
-          <button className={styles.close} onClick={() => this.closeModal()}>
-            Close
+          <button className={styles.update} onClick={() => this.closeModal()}>
+            Update
+          </button>
+          <button className={styles.cancel} onClick={() => this.closeModal()}>
+            Cancel
           </button>
         </Modal>
         <Modal
           isOpen={this.state.activeModal === 'language'}
-          onClose={() => this.closeModal()}
-        >
+          onClose={() => this.closeModal()}>
           <h1 className={styles.modalHeader}>Language Settings</h1>
           <h2>Only Follow</h2>
           <form>
@@ -72,26 +73,33 @@ export default class SettingsPage extends Component {
               </label>
             ))}
           </form>
-          <button className={styles.close} onClick={() => this.closeModal()}>
-            Close
+          <button className={styles.update} onClick={() => this.closeModal()}>
+            Update
+          </button>
+          <button className={styles.cancel} onClick={() => this.closeModal()}>
+            Cancel
           </button>
         </Modal>
         <Modal
           isOpen={this.state.activeModal === 'nsfw'}
-          onClose={() => this.closeModal()}
-        >
+          onClose={() => this.closeModal()}>
           <h1 className={styles.modalHeader}>NSFW Settings</h1>
-          <button className={styles.close} onClick={() => this.closeModal()}>
-            Close
+          <button className={styles.update} onClick={() => this.closeModal()}>
+            Update
+          </button>
+          <button className={styles.cancel} onClick={() => this.closeModal()}>
+            Cancel
           </button>
         </Modal>
         <Modal
           isOpen={this.state.activeModal === 'misc'}
-          onClose={() => this.closeModal()}
-        >
+          onClose={() => this.closeModal()}>
           <h1 className={styles.modalHeader}>Misc</h1>
-          <button className={styles.close} onClick={() => this.closeModal()}>
-            Close
+          <button className={styles.update} onClick={() => this.closeModal()}>
+            Update
+          </button>
+          <button className={styles.cancel} onClick={() => this.closeModal()}>
+            Cancel
           </button>
         </Modal>
         <div className={styles.flexContainer}>
@@ -100,8 +108,7 @@ export default class SettingsPage extends Component {
           </a>
           <a
             className={styles.language}
-            onClick={() => this.openModal('language')}
-          >
+            onClick={() => this.openModal('language')}>
             Language Settings
           </a>
           <a className={styles.nsfw} onClick={() => this.openModal('nsfw')}>

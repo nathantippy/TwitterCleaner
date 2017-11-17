@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Navbar, NavItem, Nav } from 'react-bootstrap';
-import { auth } from '../config/firebase';
+import { auth } from './config/firebase';
 import '../scss/NavBar.scss';
 class NavBar extends Component {
   render() {

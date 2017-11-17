@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { CSSTransitionGroup } from 'react-transition-group';
+import { Scrollbars } from 'react-custom-scrollbars';
 
 import TwitterAccount from './TwitterAccount';
 
@@ -20,14 +21,14 @@ export default class TwitterAccountList extends Component {
       />
     ));
     return (
-      <div>
+      <Scrollbars autoHeight={true} autoHeightMin={1200} autoHeightMax={1300}>
         <CSSTransitionGroup
           transitionName="tweet"
           transitionEnterTimeout={500}
           transitionLeaveTimeout={300}>
           {accounts}
         </CSSTransitionGroup>
-      </div>
+      </Scrollbars>
     );
   }
 }
