@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
-import TwitterLogin from 'react-twitter-auth/lib/react-twitter-auth-component';
+import { Button, Icon } from 'semantic-ui-react';
 import { Link } from 'react-router-dom';
+
 import Firebase, { auth, provider } from './config/firebase';
+import styles from '../scss/Login.module.scss';
+import NavBar from './NavBar';
 
 let appToken;
 
@@ -30,9 +33,27 @@ export default class Login extends Component {
   };
   render() {
     return (
-      <div>
-        <h1>Login Page</h1>
-        <button onClick={this.login}>Log In</button>
+      <div className={styles.body}>
+        <NavBar />
+        <img
+          className={styles.tweetImage}
+          src="http://www.mobyaffiliates.com/wp-content/uploads/2017/11/twitter-down.png"
+        />
+        <div className={styles.content}>
+          <h1>Welcome to Twitter Cleaner!</h1>
+          <br />
+          <br />
+          <h3>
+            Twitter Cleaner suggests Twitter users for you to follow and
+            unfollow<br />
+            based on your defined preferences.
+          </h3>
+          <p>To continue, please login with your Twitter Account.</p>
+          <Button onClick={this.login} className={styles.iconButton}>
+            <Icon name="twitter" size="large" className={styles.twitterIcon} />Log
+            In
+          </Button>
+        </div>
       </div>
     );
   }

@@ -24,7 +24,15 @@ export default class SettingsPage extends Component {
       'Asia',
       'Africa',
       'Australia'
-    ]
+    ],
+    nsfws: [
+      'Swearing',
+      'Nudity',
+      'Pornography',
+      'Sexual Content (Talking about sex)',
+      'Gross'
+    ],
+    misc: ['Book seller', 'Politics']
   };
 
   openModal(modal) {
@@ -84,6 +92,14 @@ export default class SettingsPage extends Component {
           isOpen={this.state.activeModal === 'nsfw'}
           onClose={() => this.closeModal()}>
           <h1 className={styles.modalHeader}>NSFW Settings</h1>
+          <h2>Unfollow</h2>
+          <form>
+            {this.state.nsfws.map(nsfw => (
+              <label key={nsfw} for={nsfw} className={styles.control}>
+                <input type="checkbox" id={nsfw} /> {' ' + nsfw}
+              </label>
+            ))}
+          </form>
           <button className={styles.update} onClick={() => this.closeModal()}>
             Update
           </button>
@@ -94,7 +110,15 @@ export default class SettingsPage extends Component {
         <Modal
           isOpen={this.state.activeModal === 'misc'}
           onClose={() => this.closeModal()}>
-          <h1 className={styles.modalHeader}>Misc</h1>
+          <h1 className={styles.modalHeader}>Miscellaneous Settings</h1>
+          <h2>Unfollow</h2>
+          <form>
+            {this.state.misc.map(mis => (
+              <label key={mis} for={mis} className={styles.control}>
+                <input type="checkbox" id={mis} /> {' ' + mis}
+              </label>
+            ))}
+          </form>
           <button className={styles.update} onClick={() => this.closeModal()}>
             Update
           </button>
