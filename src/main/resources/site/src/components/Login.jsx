@@ -20,12 +20,7 @@ export default class Login extends Component {
         const user = res.user;
         const accessToken = res.credential.accessToken;
         const accessTokenSecret = res.credential.secret;
-        this.props.handleUserLogin(
-          user,
-          username,
-          accessToken,
-          accessTokenSecret
-        );
+        this.props.handleUserLogin(user, accessToken, accessTokenSecret);
       })
       .catch(err => {
         console.log(err);
