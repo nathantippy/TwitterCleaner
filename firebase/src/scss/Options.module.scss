@@ -1,0 +1,46 @@
+.label {
+  font-size: 25px;
+  margin-left: 5px;
+  display: inline-block;
+  text-align: right;
+}
+
+.update {
+  background-color: #3cf;
+  color: white;
+  padding: 10px 20px;
+  margin-top: 10px;
+  margin-right: 10px;
+  border-radius: 2px;
+  border: 0;
+
+  &:hover,
+  &:active {
+    background-color: #046b99;
+  }
+}
+.cancel {
+  background-color: #3498db;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 2px;
+  border: 0;
+
+  &:hover,
+  &:active {
+    background-color: #1c304a;
+  }
+}
+
+.settingsIcon {
+  color: white;
+}
+
+.iconButton {
+  color: #3cf !important;
+  background-color: white !important;
+}
+
+.bigIcon {
+  color: #3cf;
+}

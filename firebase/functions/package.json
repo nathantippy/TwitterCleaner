@@ -1,0 +1,38 @@
+{
+  "name": "functions",
+  "description": "Cloud Functions for Firebase",
+  "scripts": {
+    "serve": "firebase serve --only functions",
+    "shell": "firebase experimental:functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "axios": "^0.17.0",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "custom-react-scripts": "0.2.0",
+    "express": "^4.16.2",
+    "firebase": "^4.6.1",
+    "firebase-admin": "~5.4.2",
+    "firebase-functions": "^0.7.3",
+    "firebase-tools": "^3.15.0",
+    "firebaseui": "^2.4.1",
+    "isomorphic-fetch": "^2.2.1",
+    "json-server": "^0.12.0",
+    "random-flat-colors": "^1.0.5",
+    "react": "^16.0.0",
+    "react-bootstrap": "^0.31.3",
+    "react-custom-scrollbars": "^4.1.2",
+    "react-dom": "^16.0.0",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-transition-group": "^1.2.1",
+    "reactstrap": "^4.8.0",
+    "request": "^2.83.0",
+    "semantic-ui-react": "^0.74.2",
+    "twit": "^2.2.9"
+  },
+  "private": true
+}

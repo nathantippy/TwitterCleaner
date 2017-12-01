@@ -1,0 +1,61 @@
+{
+  "name": "firebasereact",
+  "version": "1.0.0",
+  "description": "Firebase hosting with database using react",
+  "main": "./index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "webpack": "webpack",
+    "babel": "node_modules/.bin/babel src -d functions/src && node_modules/.bin/babel controllers -d functions/controllers && node_modules/.bin/babel index.js -d functions && node_modules/.bin/babel auth -d functions/auth"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erwolfe/FirebaseReact.git"
+  },
+  "keywords": [
+    "firebase",
+    "react"
+  ],
+  "author": "Eric Wolfe Jr.",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.17.0",
+    "babel-preset-stage-0": "^6.24.1",
+    "body-parser": "^1.18.2",
+    "cors": "^2.8.4",
+    "custom-react-scripts": "0.2.0",
+    "firebase": "^4.6.1",
+    "firebaseui": "^2.4.1",
+    "isomorphic-fetch": "^2.2.1",
+    "json-server": "^0.12.0",
+    "random-flat-colors": "^1.0.5",
+    "react": "^16.0.0",
+    "react-bootstrap": "^0.31.3",
+    "react-custom-scrollbars": "^4.1.2",
+    "react-dom": "^16.0.0",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-transition-group": "^1.2.1",
+    "reactstrap": "^4.8.0",
+    "request": "^2.83.0",
+    "semantic-ui-react": "^0.74.2",
+    "twit": "^2.2.9"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "express": "^4.16.2",
+    "firebase-admin": "^5.4.3",
+    "firebase-functions": "^0.7.3",
+    "firebase-tools": "^3.15.0",
+    "webpack": "^3.8.1"
+  },
+  "bugs": {
+    "url": "https://github.com/erwolfe/FirebaseReact/issues"
+  },
+  "homepage": "https://github.com/erwolfe/FirebaseReact#readme"
+}

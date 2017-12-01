@@ -1,0 +1,43 @@
+{
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/",
+        "function": "handleRoutes"
+      },
+      {
+        "source": "/api/users",
+        "function": "handleUsers"
+      },
+      {
+        "source": "/api/users/**",
+        "function": "handleUsers"
+      },
+      {
+        "source": "/api/user/**/follows",
+        "function": "handleUserFollows"
+      },
+      {
+        "source": "/api/user/**/unfollows",
+        "function": "handleUserUnfollows"
+      },
+      {
+        "source": "/api/user/**/settings",
+        "function": "handleUserSettings"
+      },
+      {
+        "source": "/api/twitter/**",
+        "function": "handleTwitter"
+      }
+    ]
+  },
+  "database": {
+    "rules": "database.rules.json"
+  }
+}
