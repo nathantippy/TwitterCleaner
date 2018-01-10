@@ -21,4 +21,4 @@ yarn-debug.log*
 yarn-error.log*
 
 # config
-/src/components/config
+/src/config
