@@ -1,9 +1,9 @@
 import React from 'react';
-import styles from '../scss/Loading.module.scss';
+import CircularProgress from 'material-ui/CircularProgress';
 const Loading = () => {
   return (
-    <div className={styles.body}>
-      <img className={styles.image} src="OCILogo.png" />
+    <div style={{position: 'absolute', top: '50%', right: '50%'}}>
+      <CircularProgress size={60} thickness={5} />
     </div>
   );
 };
